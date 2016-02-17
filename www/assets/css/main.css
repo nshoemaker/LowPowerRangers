@@ -1982,12 +1982,16 @@
 			display: none;
 		}
 
+
+	.inline_block {
+		display: inline-block;
+	}
 /* Image */
 
 	.image {
 		border-radius: 5px;
 		border: 0;
-		display: inline;
+		display: inline-block;
 		position: relative;
 	}
 
