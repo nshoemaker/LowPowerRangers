@@ -56,9 +56,12 @@
 
 										Team 20: Clayton Ritcher, Nora Shoemaker, Shashwat Srivastava 
 									</p>
+									<div class="inline_block">
 									<p>
-										<span class="image left"><img src="images/logo.jpg" alt="" /></span>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.
+										<span class="image left"><img src="images/logo.jpg" alt="" /></span>
+										We are three Electrical and Computer Engineering students at Carnegie Mellon University working on our senior capstone. This website is meant to track the progress of our project over the Spring 2016 semester.  
 									</p>
+								</div>
 								</div>
 							</section>
 
@@ -87,44 +90,15 @@
 									<h3>Concept</h3>
 									<div class="inline_block">
 									<p>
-										<span class="image right"><img src="images/angle_and_range.JPG" alt="" /></span>The goal of our project is to create a real time web API for angle of arrival and range information of a tag.
+										<span class="image right"><img src="images/angle_and_range.JPG" alt="" /></span>The goal of our project is to create a real time web API for <b>angle of arrival</b> and <b>range</b> information of a tag.
 									</p>
 								</div>
 								<div class="inline_block">
 									<p>
 										<span class="image left"><img src="images/wall.jpeg" alt="" /></span>
-										We would like to use two Decawave DWM1000 ultra wide band (UWB) radio transceiver to collect angle of arrival and range information of a single other transceiver relative to the measurement unit (two fixed Anchors). We will call the two transceivers in the measurement device Anchors, and the other device a Tag. 
+										We would like to use two, fixed ultra wide band (UWB) radio transceivers (we'll call these <b>Anchor</b>s) to collect angle of arrival and range information of a third, mobile UWB transceiver (we'll call this the <b>Tag</b>).
 									</p>
 								</div>
-								</div>
-							</section>
-							<section id="compa">
-								<div class="container">
-									<h3>Competitive Analysis</h3>
-									<p>Integer eu ante ornare amet commetus vestibulum blandit integer in curae ac faucibus integer non. Adipiscing cubilia elementum integer. Integer eu ante ornare amet commetus.</p>
-									<div class="features">
-										<article>
-											<a href="#" class="image"><img src="images/pic01.jpg" alt="" /></a>
-											<div class="inner">
-												<h4>Possibly broke spacetime</h4>
-												<p>Integer eu ante ornare amet commetus vestibulum blandit integer in curae ac faucibus integer adipiscing ornare amet.</p>
-											</div>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="images/pic02.jpg" alt="" /></a>
-											<div class="inner">
-												<h4>Terraformed a small moon</h4>
-												<p>Integer eu ante ornare amet commetus vestibulum blandit integer in curae ac faucibus integer adipiscing ornare amet.</p>
-											</div>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="images/pic03.jpg" alt="" /></a>
-											<div class="inner">
-												<h4>Snapped dark matter in the wild</h4>
-												<p>Integer eu ante ornare amet commetus vestibulum blandit integer in curae ac faucibus integer adipiscing ornare amet.</p>
-											</div>
-										</article>
-									</div>
 								</div>
 							</section>
 							<section id="motivation">
@@ -132,8 +106,37 @@
 
 									<h3>Motivation</h3>
 									<p>
-										Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.
+										Our motivation for this project is to take the new UWB technology and create an open source, cheap, and accessable way to use it in order to get very precise angle of arrival and range information in a repeatabe way. 
 									</p>
+								</div>
+							</section>
+							<section id="compa">
+								<div class="container">
+									<h3>Competitive Analysis</h3>
+									<p>Because there is no publicly available solution to our problem, we don't have any direct competators. However, we thought this would be a good time to mention competators to the UWB technology which will help explain why we are chosing to use it. </p>
+									<div class="features">
+										<article>
+											<a href="http://redpin.org/" class="image"><img src="images/redpin.png" alt="" /></a>
+											<div class="inner">
+												<h4>Wifi-based</h4>
+												<p><a href="http://redpin.org/">Redpin</a> is an open source indoor positioning system that was developed with the goal of providing at least <b>room level accuracy</b>. This technology can be used on any wifi-connected device.</p>
+											</div>
+										</article>
+										<article>
+											<a href="http://estimote.com/" class="image"><img src="images/estimote.png" alt="" /></a>
+											<div class="inner">
+												<h4>Bluetooth Low Energy (BLE) Beacons</h4>
+												<p><a href="http://estimote.com/">Estimote</a> is a company that creates small, wireless BLE radios that can be attached to any location or object in order to track surrounding smartphones. Estimote also has an SDK on top of which apps can be written in order to interact with their radios. Estimote boasts an accuracy of <b><a href="https://community.estimote.com/hc/en-us/articles/201302836-How-precise-are-Estimote-Beacons-">1 to 4 meters with measurement error of 20-30% of actual distance</a></b>.</p>
+											</div>
+										</article>
+										<article>
+											<a href="http://www.decawave.com/" class="image"><img src="images/decawave.jpg" alt="" /></a>
+											<div class="inner">
+												<h4>Ultra Wide Band (UWB)</h4>
+												<p>UWB radios use time of flight (TOF) analysis to gain distance readings with <b>sub-meter accuracy</b>. Currently, UWB is often used in custom installations because the biggest player in the space <a href="http://www.decawave.com/">Decawave</a> is a closed source shop and charges large amounts to gain access to their <a href="http://www.decawave.com/products/trek1000" >localization-enabled kits</a>. There is no open SDK for interfacing with the Decawave radios.</p>
+											</div>
+										</article>
+									</div>
 								</div>
 							</section>
 							<section id="reqs">
