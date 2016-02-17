@@ -1987,7 +1987,7 @@
 	.image {
 		border-radius: 5px;
 		border: 0;
-		display: inline-block;
+		display: inline;
 		position: relative;
 	}
 
@@ -2000,12 +2000,22 @@
 			float: left;
 			margin: 0 2.5em 2em 0;
 			top: 0.25em;
+			width: 50%;
+		}
+
+		.image.left > img {
+			width: 100%;
 		}
 
 		.image.right {
 			float: right;
 			margin: 0 0 2em 2.5em;
 			top: 0.25em;
+			width: 50%;
+		}
+
+		.image.right > img {
+			width: 100%;
 		}
 
 		.image.fit {
