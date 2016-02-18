@@ -146,15 +146,35 @@
 								<div class="container">
 
 									<h3>Requirements</h3>
-									<p>
-										Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. 
-									</p>
 
-									<h5>Alternate</h5>
+									<h5>Functional Requirements</h5>
 									<ul class="alt">
-										<li>Dolor pulvinar etiam magna etiam.</li>
-										<li>Sagittis adipiscing lorem eleifend.</li>
-										<li>Felis enim feugiat dolore viverra.</li>
+										<li>Range and angle data shall be available through a web-accessible API.</li>
+										<li>Tag shall be portable (battery powered) as to allow tracking of mobile objects.</li>
+									</ul>
+
+									<h5>Quality Attributes</h5>
+									<ul class="alt">
+										<li>Range and angle data should be available through the API in under two seconds after the data is collected.</li>
+										<li>Range and angle data shall be collected at a rate of at least 1 Hz.</li>
+										<li>Tag shall be able to run at least two hours on a full battery.</li>
+										<li>Webserver shall be able to handle load of up to 100 requests per second.</li>
+									</ul>
+
+
+									<h5>Constraints</h5>
+									<ul class="alt">
+										<li>Budget of $700.</li>
+										<li>10 week project timeline.</li>
+										<li>3 team members.</li>
+									</ul>
+
+									<h5>Stretch Goals/Possible Extensions</h5>
+									<ul class="alt">
+										<li>A ‘radar’ app for finding your keys, phone, etc (anything with a Tag attached).*</li>
+										<li>A client app that integrates the system with IFTTT, allowing actions such as turning on the TV when you sit on the couch.</li>
+										<li>Add a third Anchor, making an ‘L’ with the other two, in order to measure both the vertical and horizontal angle of arrival.</li>
+										<li>Ability to change the baseline distance between the measurement Anchors without manually changing the configuration parameters in the code.</li>
 									</ul>
 								</div>
 							</section>
@@ -162,55 +182,32 @@
 								<div class="container">
 
 									<h3>Technical Specifications</h3>
-									<p>
-										Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. 
-									</p>
 
-
-									<h5>Parts List</h5>
-									<div class="table-wrapper">
-										<table>
-											<thead>
-												<tr>
-													<th>Name</th>
-													<th>Description</th>
-													<th>Price</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<td>Item One</td>
-													<td>Ante turpis integer aliquet porttitor.</td>
-													<td>29.99</td>
-												</tr>
-												<tr>
-													<td>Item Two</td>
-													<td>Vis ac commodo adipiscing arcu aliquet.</td>
-													<td>19.99</td>
-												</tr>
-												<tr>
-													<td>Item Three</td>
-													<td> Morbi faucibus arcu accumsan lorem.</td>
-													<td>29.99</td>
-												</tr>
-												<tr>
-													<td>Item Four</td>
-													<td>Vitae integer tempus condimentum.</td>
-													<td>19.99</td>
-												</tr>
-												<tr>
-													<td>Item Five</td>
-													<td>Ante turpis integer aliquet porttitor.</td>
-													<td>29.99</td>
-												</tr>
-											</tbody>
-											<tfoot>
-												<tr>
-													<td colspan="2"></td>
-													<td>100.00</td>
-												</tr>
-											</tfoot>
-										</table>
+									<h4>Parts List</h4>
+									<div class="box alt">
+											<div class="row 50% uniform">
+												<div class="4u"><span class="image fit"><img src="images/raspi.jpg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/dwm.jpg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/atmega.jpg" alt="" /></span></div>
+											</div>
+											<div class="row 50% uniform">
+												<div class="4u"><span class="image fit">
+													<h5>Raspberry Pi</h5>
+													<p>The <a target="blank" href="https://www.sparkfun.com/products/13724">Raspberry Pi</a> will do the math to determine angle of arrival and range and will also report new data to our webserver.  
+													</p>			
+													</span></div>
+												<div class="4u"><span class="image fit">
+													<h5>Decawave DWM1000 Module</h5>
+													<p>The <a href="http://www.semiconductorstore.com/cart/pc/viewPrd.asp?idproduct=50013">DWM1000</a> is the wireless radio tranciever that allows the Tags and Anchors to talk to eachother in order to determine their distances from eachother. Each Tag/Anchor will have one of these.
+													</p>	
+												</span></div>
+												<div class="4u"><span class="image fit">
+													<h5>ATMega328</h5>
+													<p>The <a href="http://www.mouser.com/ProductDetail/Atmel/ATMEGA328P-PU/?qs=K8BHR703ZXguOQv3sKbWcg%3D%3D&gclid=CjwKEAiA__C1BRDqyJOQ8_Tq230SJABWBSxnq4t6W6Tp6DzcyCqWLSnFywsY_JBwMrpBtNGaJ_HgZhoCJADw_wcB">ATMega328</a> will boss around the DWM1000s and tell them what to do. Our homemade communication protocol will be implemented on these puppies. Each Tag/Anchor will have one og these.  
+													</p>	
+												</span></div>
+											</div>
+										</div>
 									</div>
 								</div>
 							</section>
