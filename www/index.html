@@ -90,13 +90,13 @@
 									<h3>Concept</h3>
 									<div class="inline_block">
 									<p>
-										<span class="image right"><img src="images/angle_and_range.JPG" alt="" /></span>The goal of our project is to create a real time web API for <b>angle of arrival</b> and <b>range</b> information of a tag.
+										<span class="image right"><img src="images/angle_and_range.JPG" alt="" /></span>The goal of our project is to create a real time web API for relative <b>angle</b> and <b>range</b> information of a Tag from a measurement device.
 									</p>
 								</div>
 								<div class="inline_block">
 									<p>
 										<span class="image left"><img src="images/wall.jpeg" alt="" /></span>
-										We would like to use two, fixed ultra wide band (UWB) radio transceivers (we'll call these <b>Anchor</b>s) to collect angle of arrival and range information of a third, mobile UWB transceiver (we'll call this the <b>Tag</b>).
+										To do this, we plan to use two fixed ultra wide band (UWB) radio transceivers (called <b>Anchor</b>s) to collect Angle of Arrival (AoA) and Time of Flight (TOF) information of signals from a third, mobile UWB transceiver (called a <b>Tag</b>).
 									</p>
 								</div>
 								</div>
@@ -106,34 +106,37 @@
 
 									<h3>Motivation</h3>
 									<p>
-										Our motivation for this project is to take the new UWB technology and create an open source, cheap, and accessable way to use it in order to get very precise angle of arrival and range information in a repeatabe way. 
+										Indoor position tracking applications are limitless -- from home automation, to security, or even finding your keys.
+										Currently, indoor postion tracking systems are either too inaccurate for many of these applications, require extensive infrastructure, or are too expensive to achieve widespread adoption.
+										<br><br>
+										Our goal is to create an inexpensive plug-and-play device that precisely measures its range and angle from a Tag to support these types of applications.
 									</p>
 								</div>
 							</section>
 							<section id="compa">
 								<div class="container">
 									<h3>Competitive Analysis</h3>
-									<p>Because there is no publicly available solution to our problem, we don't have any direct competators. However, we thought this would be a good time to mention competators to the UWB technology which will help explain why we are chosing to use it. </p>
+									<p>No current solutions exist that use UWB radios to measure range and angle to a device. Several systems exist that could be used for similar applications, though. For instance:</p>
 									<div class="features">
 										<article>
 											<a href="http://redpin.org/" class="image"><img src="images/redpin.png" alt="" /></a>
 											<div class="inner">
 												<h4>Wifi-based</h4>
-												<p><a href="http://redpin.org/">Redpin</a> is an open source indoor positioning system that was developed with the goal of providing at least <b>room level accuracy</b>. This technology can be used on any wifi-connected device.</p>
+												<p><a href="http://redpin.org/">Redpin</a> is an open source indoor positioning system that was developed with the goal of providing at least <b>room level accuracy</b>. This technology can be used on any wifi-connected device. Its utilization of current WiFi infrastructure makes it easy to adopt, but its accuracy rules it out for some applications.</p>
 											</div>
 										</article>
 										<article>
 											<a href="http://estimote.com/" class="image"><img src="images/estimote.png" alt="" /></a>
 											<div class="inner">
 												<h4>Bluetooth Low Energy (BLE) Beacons</h4>
-												<p><a href="http://estimote.com/">Estimote</a> is a company that creates small, wireless BLE radios that can be attached to any location or object in order to track surrounding smartphones. Estimote also has an SDK on top of which apps can be written in order to interact with their radios. Estimote boasts an accuracy of <b><a href="https://community.estimote.com/hc/en-us/articles/201302836-How-precise-are-Estimote-Beacons-">1 to 4 meters with measurement error of 20-30% of actual distance</a></b>.</p>
+												<p><a href="http://estimote.com/">Estimote</a> is a company that creates small, wireless BLE radios that can be attached to any location or object in order to track surrounding smartphones. Estimote also has an SDK on top of which apps can be written in order to interact with their radios. Estimote boasts an average <b><a href="https://community.estimote.com/hc/en-us/articles/201302836-How-precise-are-Estimote-Beacons-">measurement error of 20-30% of actual distance</a></b>. Estimote's SDK and battery operated beacons make installation easy, but because error grows with the distance from the beacons, high accuracy requires many beacons in the space.</p>
 											</div>
 										</article>
 										<article>
 											<a href="http://www.decawave.com/" class="image"><img src="images/decawave.jpg" alt="" /></a>
 											<div class="inner">
 												<h4>Ultra Wide Band (UWB)</h4>
-												<p>UWB radios use time of flight (TOF) analysis to gain distance readings with <b>sub-meter accuracy</b>. Currently, UWB is often used in custom installations because the biggest player in the space <a href="http://www.decawave.com/">Decawave</a> is a closed source shop and charges large amounts to gain access to their <a href="http://www.decawave.com/products/trek1000" >localization-enabled kits</a>. There is no open SDK for interfacing with the Decawave radios.</p>
+												<p>UWB radios use time of flight (TOF) analysis to gain distance readings with <b>sub-meter accuracy</b>. Because UWB radios are not yet ubiquitous (not in phones like BLE or WiFi), UWB tracking is often used in custom installations which are expensive. Additionally, the biggest player in the production of UWB transceivers, <a href="http://www.decawave.com/">Decawave</a>, is a closed source shop and charges large amounts to gain access to their <a href="http://www.decawave.com/products/trek1000" >development kits</a>.</p>
 											</div>
 										</article>
 									</div>
