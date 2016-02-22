@@ -1,0 +1,415 @@
+   1               		.file	"lab3.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__ = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+  10               		.text
+  11               	.Ltext0:
+ 101               	.global	_Z12setOnlyColori
+ 103               	_Z12setOnlyColori:
+ 104               		.stabd	46,0,0
+   1:lab3.c        **** #include <Arduino.h>
+   2:lab3.c        **** #include <HardwareSerial.h>
+   3:lab3.c        **** 
+   4:lab3.c        **** #define NUM_PINS 3
+   5:lab3.c        **** 
+   6:lab3.c        **** #define RED_PIN 0
+   7:lab3.c        **** #define GREEN_PIN 1
+   8:lab3.c        **** #define BLUE_PIN 2
+   9:lab3.c        **** 
+  10:lab3.c        **** #define TEMP_PIN A0
+  11:lab3.c        **** 
+  12:lab3.c        **** int pins[NUM_PINS] = {9, 10, 3};
+  13:lab3.c        **** 
+  14:lab3.c        **** void setOnlyColor(int pin) {
+ 106               	.LM0:
+ 107               	.LFBB1:
+ 108 0000 EF92      		push r14
+ 109 0002 FF92      		push r15
+ 110 0004 0F93      		push r16
+ 111 0006 1F93      		push r17
+ 112 0008 CF93      		push r28
+ 113 000a DF93      		push r29
+ 114               	/* prologue: function */
+ 115               	/* frame size = 0 */
+ 116               	/* stack size = 6 */
+ 117               	.L__stack_usage = 6
+ 118 000c 7C01      		movw r14,r24
+ 120               	.LM1:
+ 121 000e C0E0      		ldi r28,lo8(pins)
+ 122 0010 D0E0      		ldi r29,hi8(pins)
+ 123               	.L2:
+ 125               	.LM2:
+ 126 0012 8E01      		movw r16,r28
+ 127               	.LBB2:
+ 128               	.LBB3:
+  15:lab3.c        ****    for (int i = 0; i < NUM_PINS; ++i) {
+  16:lab3.c        ****       pinMode(pins[i], OUTPUT);
+ 130               	.LM3:
+ 131 0014 8881      		ld r24,Y
+ 132 0016 61E0      		ldi r22,lo8(1)
+ 133 0018 0E94 0000 		call pinMode
+ 134 001c 2296      		adiw r28,2
+  17:lab3.c        ****       digitalWrite(pins[i], LOW);
+ 136               	.LM4:
+ 137 001e F801      		movw r30,r16
+ 138 0020 8081      		ld r24,Z
+ 139 0022 60E0      		ldi r22,lo8(0)
+ 140 0024 0E94 0000 		call digitalWrite
+  15:lab3.c        ****    for (int i = 0; i < NUM_PINS; ++i) {
+ 142               	.LM5:
+ 143 0028 F0E0      		ldi r31,hi8(pins+6)
+ 144 002a C030      		cpi r28,lo8(pins+6)
+ 145 002c DF07      		cpc r29,r31
+ 146 002e 01F4      		brne .L2
+ 147               	.LBE3:
+  18:lab3.c        ****    }
+  19:lab3.c        ****    if (pin < NUM_PINS && pin >= 0) {
+ 149               	.LM6:
+ 150 0030 83E0      		ldi r24,lo8(3)
+ 151 0032 E816      		cp r14,r24
+ 152 0034 F104      		cpc r15,__zero_reg__
+ 153 0036 00F4      		brsh .L1
+  20:lab3.c        ****       digitalWrite(pins[pin], HIGH);
+ 155               	.LM7:
+ 156 0038 F701      		movw r30,r14
+ 157 003a EE0F      		lsl r30
+ 158 003c FF1F      		rol r31
+ 159 003e E050      		subi r30,lo8(-(pins))
+ 160 0040 F040      		sbci r31,hi8(-(pins))
+ 161 0042 8081      		ld r24,Z
+ 162 0044 61E0      		ldi r22,lo8(1)
+ 163 0046 0E94 0000 		call digitalWrite
+ 164               	.L1:
+ 165               	/* epilogue start */
+ 166               	.LBE2:
+  21:lab3.c        ****    }
+  22:lab3.c        **** }
+ 168               	.LM8:
+ 169 004a DF91      		pop r29
+ 170 004c CF91      		pop r28
+ 171 004e 1F91      		pop r17
+ 172 0050 0F91      		pop r16
+ 173 0052 FF90      		pop r15
+ 174 0054 EF90      		pop r14
+ 175 0056 0895      		ret
+ 177               	.Lscope1:
+ 179               		.stabd	78,0,0
+ 182               	.global	_Z12setAutoColori
+ 184               	_Z12setAutoColori:
+ 185               		.stabd	46,0,0
+  23:lab3.c        **** 
+  24:lab3.c        **** void setAutoColor(int temperature) {
+ 187               	.LM9:
+ 188               	.LFBB2:
+ 189 0058 EF92      		push r14
+ 190 005a FF92      		push r15
+ 191 005c 0F93      		push r16
+ 192 005e 1F93      		push r17
+ 193               	/* prologue: function */
+ 194               	/* frame size = 0 */
+ 195               	/* stack size = 4 */
+ 196               	.L__stack_usage = 4
+ 197               	.LBB4:
+  25:lab3.c        ****    int minReading = 135;
+  26:lab3.c        ****    int maxReading = 155;
+  27:lab3.c        ****    float scale = ((float)(temperature - minReading)) / (maxReading - minReading);
+ 199               	.LM10:
+ 200 0060 BC01      		movw r22,r24
+ 201 0062 6758      		subi r22,lo8(-(-135))
+ 202 0064 7040      		sbci r23,hi8(-(-135))
+ 203 0066 8827      		clr r24
+ 204 0068 77FD      		sbrc r23,7
+ 205 006a 8095      		com r24
+ 206 006c 982F      		mov r25,r24
+ 207 006e 0E94 0000 		call __floatsisf
+ 208 0072 20E0      		ldi r18,lo8(0x41a00000)
+ 209 0074 30E0      		ldi r19,hi8(0x41a00000)
+ 210 0076 40EA      		ldi r20,hlo8(0x41a00000)
+ 211 0078 51E4      		ldi r21,hhi8(0x41a00000)
+ 212 007a 0E94 0000 		call __divsf3
+ 213 007e 7B01      		movw r14,r22
+ 214 0080 8C01      		movw r16,r24
+  28:lab3.c        ****    scale = (scale < 0.0) ? 0.0 : scale;
+ 216               	.LM11:
+ 217 0082 7F2D      		mov r23,r15
+ 218 0084 912F      		mov r25,r17
+ 219 0086 20E0      		ldi r18,lo8(0x0)
+ 220 0088 30E0      		ldi r19,hi8(0x0)
+ 221 008a A901      		movw r20,r18
+ 222 008c 0E94 0000 		call __ltsf2
+ 223 0090 87FF      		sbrs r24,7
+ 224 0092 00C0      		rjmp .L6
+ 225 0094 EE24      		clr r14
+ 226 0096 FF24      		clr r15
+ 227 0098 00E0      		ldi r16,lo8(0)
+ 228 009a 10E0      		ldi r17,lo8(0)
+ 229               	.L6:
+  29:lab3.c        ****    scale = (scale > 1.0) ? 1.0 : scale;
+ 231               	.LM12:
+ 232 009c 6E2D      		mov r22,r14
+ 233 009e 7F2D      		mov r23,r15
+ 234 00a0 802F      		mov r24,r16
+ 235 00a2 912F      		mov r25,r17
+ 236 00a4 20E0      		ldi r18,lo8(0x3f800000)
+ 237 00a6 30E0      		ldi r19,hi8(0x3f800000)
+ 238 00a8 40E8      		ldi r20,hlo8(0x3f800000)
+ 239 00aa 5FE3      		ldi r21,hhi8(0x3f800000)
+ 240 00ac 0E94 0000 		call __gtsf2
+ 241 00b0 1816      		cp __zero_reg__,r24
+ 242 00b2 04F4      		brge .L8
+ 244               	.LM13:
+ 245 00b4 EE24      		clr r14
+ 246 00b6 FF24      		clr r15
+ 247 00b8 00E8      		ldi r16,lo8(-128)
+ 248 00ba 1FE3      		ldi r17,lo8(63)
+ 249               	.L8:
+  30:lab3.c        ****    analogWrite(pins[RED_PIN], scale * 255);
+ 251               	.LM14:
+ 252 00bc 6E2D      		mov r22,r14
+ 253 00be 7F2D      		mov r23,r15
+ 254 00c0 802F      		mov r24,r16
+ 255 00c2 912F      		mov r25,r17
+ 256 00c4 20E0      		ldi r18,lo8(0x437f0000)
+ 257 00c6 30E0      		ldi r19,hi8(0x437f0000)
+ 258 00c8 4FE7      		ldi r20,hlo8(0x437f0000)
+ 259 00ca 53E4      		ldi r21,hhi8(0x437f0000)
+ 260 00cc 0E94 0000 		call __mulsf3
+ 261 00d0 0E94 0000 		call __fixsfsi
+ 262 00d4 9B01      		movw r18,r22
+ 263 00d6 AC01      		movw r20,r24
+ 264 00d8 8091 0000 		lds r24,pins
+ 265 00dc B901      		movw r22,r18
+ 266 00de 0E94 0000 		call analogWrite
+  31:lab3.c        ****    analogWrite(pins[BLUE_PIN], (1.0 - scale) * 255);
+ 268               	.LM15:
+ 269 00e2 60E0      		ldi r22,lo8(0x3f800000)
+ 270 00e4 70E0      		ldi r23,hi8(0x3f800000)
+ 271 00e6 80E8      		ldi r24,hlo8(0x3f800000)
+ 272 00e8 9FE3      		ldi r25,hhi8(0x3f800000)
+ 273 00ea 2E2D      		mov r18,r14
+ 274 00ec 3F2D      		mov r19,r15
+ 275 00ee 402F      		mov r20,r16
+ 276 00f0 512F      		mov r21,r17
+ 277 00f2 0E94 0000 		call __subsf3
+ 278 00f6 20E0      		ldi r18,lo8(0x437f0000)
+ 279 00f8 30E0      		ldi r19,hi8(0x437f0000)
+ 280 00fa 4FE7      		ldi r20,hlo8(0x437f0000)
+ 281 00fc 53E4      		ldi r21,hhi8(0x437f0000)
+ 282 00fe 0E94 0000 		call __mulsf3
+ 283 0102 0E94 0000 		call __fixsfsi
+ 284 0106 9B01      		movw r18,r22
+ 285 0108 AC01      		movw r20,r24
+ 286 010a 8091 0000 		lds r24,pins+4
+ 287 010e B901      		movw r22,r18
+ 288 0110 0E94 0000 		call analogWrite
+ 289               	/* epilogue start */
+ 290               	.LBE4:
+  32:lab3.c        **** }
+ 292               	.LM16:
+ 293 0114 1F91      		pop r17
+ 294 0116 0F91      		pop r16
+ 295 0118 FF90      		pop r15
+ 296 011a EF90      		pop r14
+ 297 011c 0895      		ret
+ 299               	.Lscope2:
+ 301               		.stabd	78,0,0
+ 303               	.global	main
+ 305               	main:
+ 306               		.stabd	46,0,0
+  33:lab3.c        **** 
+  34:lab3.c        **** int main(void)
+  35:lab3.c        **** {
+ 308               	.LM17:
+ 309               	.LFBB3:
+ 310 011e 1F93      		push r17
+ 311 0120 CF93      		push r28
+ 312 0122 DF93      		push r29
+ 313               	/* prologue: function */
+ 314               	/* frame size = 0 */
+ 315               	/* stack size = 3 */
+ 316               	.L__stack_usage = 3
+ 317               	.LBB5:
+  36:lab3.c        ****    char byteRead;
+  37:lab3.c        ****    int temperature;
+  38:lab3.c        ****    bool autoMode = false;
+  39:lab3.c        ****    init();
+ 319               	.LM18:
+ 320 0124 0E94 0000 		call init
+  40:lab3.c        ****    Serial.begin(115200);
+ 322               	.LM19:
+ 323 0128 80E0      		ldi r24,lo8(Serial)
+ 324 012a 90E0      		ldi r25,hi8(Serial)
+ 325 012c 40E0      		ldi r20,lo8(115200)
+ 326 012e 52EC      		ldi r21,hi8(115200)
+ 327 0130 61E0      		ldi r22,hlo8(115200)
+ 328 0132 70E0      		ldi r23,hhi8(115200)
+ 329 0134 0E94 0000 		call _ZN14HardwareSerial5beginEm
+  41:lab3.c        ****    setOnlyColor(-1);
+ 331               	.LM20:
+ 332 0138 8FEF      		ldi r24,lo8(-1)
+ 333 013a 9FEF      		ldi r25,hi8(-1)
+ 334 013c 0E94 0000 		call _Z12setOnlyColori
+  38:lab3.c        ****    bool autoMode = false;
+ 336               	.LM21:
+ 337 0140 10E0      		ldi r17,lo8(0)
+ 338               	.L21:
+  42:lab3.c        ****    while (1) {
+  43:lab3.c        ****       temperature = analogRead(TEMP_PIN);
+ 340               	.LM22:
+ 341 0142 8EE0      		ldi r24,lo8(14)
+ 342 0144 0E94 0000 		call analogRead
+ 343 0148 EC01      		movw r28,r24
+  44:lab3.c        ****       Serial.println(temperature);
+ 345               	.LM23:
+ 346 014a 80E0      		ldi r24,lo8(Serial)
+ 347 014c 90E0      		ldi r25,hi8(Serial)
+ 348 014e BE01      		movw r22,r28
+ 349 0150 4AE0      		ldi r20,lo8(10)
+ 350 0152 50E0      		ldi r21,hi8(10)
+ 351 0154 0E94 0000 		call _ZN5Print7printlnEii
+  45:lab3.c        ****       if (Serial.available() > 0) {
+ 353               	.LM24:
+ 354 0158 80E0      		ldi r24,lo8(Serial)
+ 355 015a 90E0      		ldi r25,hi8(Serial)
+ 356 015c 0E94 0000 		call _ZN14HardwareSerial9availableEv
+ 357 0160 1816      		cp __zero_reg__,r24
+ 358 0162 1906      		cpc __zero_reg__,r25
+ 359 0164 04F4      		brge .L13
+  46:lab3.c        ****          autoMode = false;
+  47:lab3.c        ****          byteRead = Serial.read();
+ 361               	.LM25:
+ 362 0166 80E0      		ldi r24,lo8(Serial)
+ 363 0168 90E0      		ldi r25,hi8(Serial)
+ 364 016a 0E94 0000 		call _ZN14HardwareSerial4readEv
+  48:lab3.c        ****          if (byteRead == 'r') {
+ 366               	.LM26:
+ 367 016e 8237      		cpi r24,lo8(114)
+ 368 0170 01F4      		brne .L14
+  49:lab3.c        ****             setOnlyColor(RED_PIN);
+ 370               	.LM27:
+ 371 0172 80E0      		ldi r24,lo8(0)
+ 372 0174 90E0      		ldi r25,hi8(0)
+ 373 0176 00C0      		rjmp .L22
+ 374               	.L14:
+  50:lab3.c        ****          } else if (byteRead == 'g') {
+ 376               	.LM28:
+ 377 0178 8736      		cpi r24,lo8(103)
+ 378 017a 01F4      		brne .L16
+  51:lab3.c        ****             setOnlyColor(GREEN_PIN);
+ 380               	.LM29:
+ 381 017c 81E0      		ldi r24,lo8(1)
+ 382 017e 90E0      		ldi r25,hi8(1)
+ 383 0180 00C0      		rjmp .L22
+ 384               	.L16:
+  52:lab3.c        ****          } else if (byteRead == 'b') {
+ 386               	.LM30:
+ 387 0182 8236      		cpi r24,lo8(98)
+ 388 0184 01F4      		brne .L17
+  53:lab3.c        ****             setOnlyColor(BLUE_PIN);
+ 390               	.LM31:
+ 391 0186 82E0      		ldi r24,lo8(2)
+ 392 0188 90E0      		ldi r25,hi8(2)
+ 393               	.L22:
+ 394 018a 0E94 0000 		call _Z12setOnlyColori
+ 395 018e 00C0      		rjmp .L15
+ 396               	.L17:
+  54:lab3.c        ****          } else if (byteRead == 'o') {
+ 398               	.LM32:
+ 399 0190 8F36      		cpi r24,lo8(111)
+ 400 0192 01F4      		brne .L18
+  55:lab3.c        ****             setOnlyColor(-1);
+ 402               	.LM33:
+ 403 0194 8FEF      		ldi r24,lo8(-1)
+ 404 0196 9FEF      		ldi r25,hi8(-1)
+ 405 0198 00C0      		rjmp .L22
+ 406               	.L18:
+  56:lab3.c        ****          } else if (byteRead == 'a') {
+ 408               	.LM34:
+ 409 019a 8136      		cpi r24,lo8(97)
+ 410 019c 01F4      		brne .L15
+  57:lab3.c        ****             setOnlyColor(-1);
+ 412               	.LM35:
+ 413 019e 8FEF      		ldi r24,lo8(-1)
+ 414 01a0 9FEF      		ldi r25,hi8(-1)
+ 415 01a2 0E94 0000 		call _Z12setOnlyColori
+  58:lab3.c        ****             autoMode = true;
+ 417               	.LM36:
+ 418 01a6 11E0      		ldi r17,lo8(1)
+ 419 01a8 00C0      		rjmp .L19
+ 420               	.L13:
+  59:lab3.c        ****          }
+  60:lab3.c        ****       }
+  61:lab3.c        ****       if (autoMode) {
+ 422               	.LM37:
+ 423 01aa 1123      		tst r17
+ 424 01ac 01F0      		breq .L20
+ 425               	.L19:
+  62:lab3.c        ****          setAutoColor(temperature);
+ 427               	.LM38:
+ 428 01ae CE01      		movw r24,r28
+ 429 01b0 0E94 0000 		call _Z12setAutoColori
+ 430               	.L20:
+  63:lab3.c        ****       }
+  64:lab3.c        ****       delay(100);
+ 432               	.LM39:
+ 433 01b4 64E6      		ldi r22,lo8(100)
+ 434 01b6 70E0      		ldi r23,hi8(100)
+ 435 01b8 80E0      		ldi r24,hlo8(100)
+ 436 01ba 90E0      		ldi r25,hhi8(100)
+ 437 01bc 0E94 0000 		call delay
+  42:lab3.c        ****    while (1) {
+ 439               	.LM40:
+ 440 01c0 00C0      		rjmp .L21
+ 441               	.L15:
+  58:lab3.c        ****             autoMode = true;
+ 443               	.LM41:
+ 444 01c2 10E0      		ldi r17,lo8(0)
+ 445 01c4 00C0      		rjmp .L20
+ 446               	.LBE5:
+ 452               	.Lscope3:
+ 454               		.stabd	78,0,0
+ 455               	.global	pins
+ 456               		.data
+ 459               	pins:
+ 460 0000 0900      		.word	9
+ 461 0002 0A00      		.word	10
+ 462 0004 0300      		.word	3
+ 479               		.text
+ 481               	.Letext0:
+ 482               	.global __do_copy_data
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 lab3.c
+     /tmp/cci5c9Te.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/cci5c9Te.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/cci5c9Te.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/cci5c9Te.s:5      *ABS*:0000000000000034 __CCP__
+     /tmp/cci5c9Te.s:6      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cci5c9Te.s:7      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cci5c9Te.s:103    .text:0000000000000000 _Z12setOnlyColori
+     /tmp/cci5c9Te.s:459    .data:0000000000000000 pins
+     /tmp/cci5c9Te.s:184    .text:0000000000000058 _Z12setAutoColori
+     /tmp/cci5c9Te.s:305    .text:000000000000011e main
+
+UNDEFINED SYMBOLS
+pinMode
+digitalWrite
+__floatsisf
+__divsf3
+__ltsf2
+__gtsf2
+__mulsf3
+__fixsfsi
+analogWrite
+__subsf3
+init
+Serial
+_ZN14HardwareSerial5beginEm
+analogRead
+_ZN5Print7printlnEii
+_ZN14HardwareSerial9availableEv
+_ZN14HardwareSerial4readEv
+delay
+__do_copy_data
