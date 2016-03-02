@@ -17,10 +17,9 @@ SRC = tag.c
 # the C source files
 PSRC =
 # the C++ source files
-ARDLIBS =
+ARDLIBS = SPI
 # Directories to include
 EXTRAINCDIRS = ../common
-# extra Arduino libraries
 # include /d/dev/avr/Makefile.base 		# this line includes the Makefile.base
 
 # A number of necessary variables are set to defaults below, but you can override them
