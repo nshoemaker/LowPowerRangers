@@ -3,6 +3,8 @@
 
 #include "dwm1000.h"
 
+#define NETWORK_ID 0
+
 #define SELECT_PIN 10
 
 int main(void)
@@ -19,6 +21,12 @@ int main(void)
       	Serial.print(tmp);
       }
       Serial.println("");
+      DW_setAddr(CHIP_ADDR);
+      Serial.print("Address: ");
+      Serial.println(DW_getAddr());
+      DW_setNetworkId(NETWORK_ID);
+      Serial.print("Network: ");
+      Serial.println(DW_getNetworkId());
       delay(500);
    }
    return 0;

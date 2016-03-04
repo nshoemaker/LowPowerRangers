@@ -51,6 +51,9 @@ EXTRAINCDIRS = ../common
 
 ### These macros pertain to compiler flags
 # Target file name (without extension).
+ifndef CHIP_ADDR
+CHIP_ADDR = 0
+endif
 ifndef TARGET
 TARGET = main
 endif
@@ -82,7 +85,7 @@ endif
 ifndef F_CPU
 F_CPU = 8000000
 endif
-CFLAGS += -D F_CPU=$(F_CPU)
+CFLAGS += -D F_CPU=$(F_CPU) -D CHIP_ADDR=$(CHIP_ADDR)
 CFLAGS += -std=c99
 
 
@@ -334,8 +337,7 @@ extcoff: $(TARGET).elf
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) -b $(BAUDRATE)
 
-
-
+program_id: clean program
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
