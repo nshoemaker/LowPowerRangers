@@ -263,26 +263,44 @@
 										<article>
 											<div>						
 												<ul class="feature-icons">
-													<li class="fa-hourglass-2">
+													<li class="fa-plane">
 														<h3>3/14/2016</h3>
 													</li>
 												</ul>
-												<h4>Making Contact with the DWM1000! </h4>
+												<h4>Making Contact with the DWM1000, Schematics, Deployment, RasPis and More! </h4>
 
-												<a href="images/2016.02.29.jpeg" class="image"><img src="images/2016.03.15.jpg" alt="" /></a>
+												<a href="images/2016.03.15.jpg" class="image"><img src="images/2016.03.15.jpg" alt="" /></a>
 												<div class="inner">
-													<p>Much to our relief, the DWM1000s finally arrived. This allowed us to start a lot of the work we had been putting off while waiting for them. First, we soldered them and connected them to our breadboarded prototypes (this was a painful process, more on how we did that below), then we decided to make initial contact with them by simply reading the device ID from the chip (some read operations are more complex than others due to offsets, etc. and this one seemed like a simple one to start out with).</p>
-													<p>This week we also decided to focus on deploying our web server and attempting to query it from the Raspberry Pi. This activity was good because it forced us to setup the Raspberry Pi and configure the Wifi adapter we bought. Additionally, it forced us to go through the web server deployment process which, even with experience, tends to be a bit tricky. We chose to deploy on Heroku because it is easy and we do not need to store data persistantly in our DB.</p>
+													<p>This week we focused on:</p>
+												<ul>
+													<li>Soldering the new DWM1000s and adding them to our breadboarded prototypes.</li>
+													<li>Reading and Writing to DWM1000 Registers over SPI. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/e219cd2be49e8636380b2e7d7e009424ae558c66" target="_blank">(code)</a></li>
+													<li>Making DWM1000 Device Address Configurable via Makefile. <a href="https://github.com/nshoemaker/LowPowerRangers/blob/e219cd2be49e8636380b2e7d7e009424ae558c66/microcontrollers/src/tag/Makefile#L88" target="_blank">(code)</a></li>
+													<li>Deploying our django server. <a href="https://test-server-549.herokuapp.com/testServer/set/2/1/1/1" target="_blank">(example API call)</a> </li>
+													<li>Creating an Eagle schematic to Match our prototypes. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/cb8676a9869359cc88f6ee02b6d7bb34378c6850" target="_blank">(sch file)</a></li>
+													<li>Setting up Raspberry Pi.</li>
+												</ul>
 												</div>
 												<p></p>
-												<p> In the face of this setback, we have been reorganizing and focusing on the things we can do without our tranceivers:</p>
+													<p>Thanks to Spring Break, this is more like two weeks worth of work(ish).</p>
+												<h5>The DWM1000s are here!</h5>
+													<p>Much to our relief, the DWM1000s finally arrived. This allowed us to start a lot of the work we had been putting off while waiting for them. First, we soldered them and connected them to our breadboarded prototypes (this was a painful process, we are actually looking forward to being able to surface mount solder them to our PCB), then we decided to make initial contact with them by simply reading the device ID from the chip (some read operations are more complex than others due to offsets, etc. and this one seemed like a simple one to start out with). We then moved on to accommodating reads/writes with various address offsets.</p>
+												<h5>RasPi and Server Deployment</h5>
+													<p>This week we also decided to focus on deploying our web server and attempting to query it from the Raspberry Pi. This activity was good because it forced us to setup the Raspberry Pi and configure the Wifi adapter we bought. Additionally, it forced us to go through the web server deployment process which, even with experience, tends to be a bit tricky. We chose to deploy on Heroku because it is easy and we do not need to store data persistantly in our DB. Below is an example output from our API.</p>
+													<pre><code>
+$ curl https://test-server-549.herokuapp.com/testServer/set/2/1/1/1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    60    0    60    0     0    192      0 --:--:-- --:--:-- --:--:--   213
 
-												<ul>
-													<li>Soldered the new DWM1000s and added them to our breadboarded prototypes.</li>
-													<li>Read Device Address from DWM1000 over SPI. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/e219cd2be49e8636380b2e7d7e009424ae558c66" target="_blank">(code)</a></li>
-													<li>Deployed our django server. TODO: link and maybe more details?</li>
-													<li>Created Eagle Schematic to Match our</li>
-												</ul>
+<html><body>It has been set to R=0.866025 and theta=0.000000
+
+													</code></pre>
+												<h5>Eagle Schematic</h5>
+													<p>
+														After having a working prototype, we decided it was time to create an Eagle schematic of our prototype so we can be ready to print the PCBs as soon as possible. We are still waiting to confirm a few of the connections (mostly waiting for interrupt related connections coming from the DWM1000s). Creating the schematic brought up some problems related to the initial parts we ordered (and their possible lack of surface mount equivalents). For this reason, we had to do some more research into finding the correct surface mount substitutes for the through hole parts being used in the current prototypes. Additionally, we were able to find a <a href="https://github.com/nshoemaker/LowPowerRangers/commit/9ff49f17429d7e04b1f94a3f40483ad6cec65fab" target="_blank">DWM1000 library file</a> for Eagle, which meant we didn't need to create/define this part ourselves. 
+													</p>
+													<a href="images/03.15.16Schematic.JPG"><img src="images/03.15.16Schematic.JPG" alt="" /></a>
 											</div>
 										</article>
 										<article>
