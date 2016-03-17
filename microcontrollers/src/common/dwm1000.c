@@ -1,5 +1,10 @@
 #include "dwm1000.h"
 
+int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header);
+void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
+void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
+void _setTxConfig(unsigned int msg_len);
+
 int _selectPin;
 
 void DW_init(int selectPin) {
@@ -9,10 +14,18 @@ void DW_init(int selectPin) {
 
 	_selectPin = selectPin;
 	pinMode(selectPin, OUTPUT);
+	// First SPI interaction is always garabge, for some reason
+	DW_getAddr();
+	delay(100);
+
+	long settings = CONFIG_SETTINGS;
+	_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
+
+	_setTxConfig(0);
 }
 
 void DW_getDevID(byte* devId) {
-		_readRegister(DEVICE_ID_ADDR, false, 0, devId, 4);
+	_readRegister(DEVICE_ID_ADDR, false, 0, devId, 4);
 }
 
 void DW_setAddr(unsigned int addr) {
@@ -33,6 +46,13 @@ unsigned int DW_getNetworkId() {
 	int id;
 	_readRegister(NETWORK_ADDR_ADDR, true, NETWORK_ID_SUB, (byte*)&id, 2);
 	return id;
+}
+
+void _setTxConfig(unsigned int msg_len) {
+	byte config[5];
+	*((unsigned long*)config) = TX_SETTINGS | (unsigned long)msg_len;
+	config[4] = IFS_DELAY;
+	_writeRegister(TX_CONFIG_ADDR, false, 0, config, 5);
 }
 
 int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header) {
@@ -66,9 +86,9 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	for (unsigned int i = 0; i < n; ++i) {
 		data[i] = SPI.transfer(BLANK);
 	}
-	delayMicroseconds(10);
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
+	delayMicroseconds(50);
 }
 
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
@@ -83,7 +103,16 @@ void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, u
 	for (unsigned int i = 0; i < n; ++i) {
 		SPI.transfer(data[i]);
 	}
-	delayMicroseconds(10);
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
+	delayMicroseconds(50);
+}
+
+void printBytes(byte* data, int n) {
+	char tmp[3];
+	for (int i = n - 1; i >= 0; --i) {
+      	sprintf(tmp, "%.2X", data[i]);
+      	Serial.print(tmp);
+      }
+      Serial.println();
 }
