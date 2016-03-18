@@ -24,7 +24,6 @@
 #define TX_CONFIG_ADDR 0x08
 #define TX_BUFF_ADDR 0x09
 #define DELAY_ADDR 0x0A
-#define RX_TIMEOUT_ADDR 0x0C
 #define CONTROL_ADDR 0x0D
 #define INTERRUPT_MASK_ADDR 0x0E
 #define STATUS_ADDR 0x0F
@@ -55,8 +54,8 @@
 #define TIMESTAMP_SUB 0x00
 // AGC_ADDR
 #define AGC1_SUB 0x04
-#define AGC1_SUB 0x0C
-#define AGC1_SUB 0x12
+#define AGC2_SUB 0x0C
+#define AGC3_SUB 0x12
 // DRX_ADDR
 #define DRX0B_SUB 0x02
 #define DRX1A_SUB 0x04
@@ -80,10 +79,15 @@
 #define TX_DONE_BIT 7
 #define RX_DONE_BIT 13
 #define RX_VALID_BIT 14
-#define RX_TIMEOUT_BIT 17
+
+// System Control Bits
+#define TX_START_BIT 1
+#define TX_DELAY_BIT 2
+#define CANCEL_BIT 6
+#define RX_START_BIT 8
 
 // Configuration
-#define CONFIG_SETTINGS 0b00010000000000000001011111111101L
+#define CONFIG_SETTINGS 0b00000000000000000001011111111101L
 #define TX_SETTINGS 0b00000000000101101100000000000000L
 #define IFS_DELAY 0b00000000
 #define ANT_DELAY 16384
@@ -105,12 +109,23 @@
 #define LDE2 0x0607
 #define LDE_REPC 0x28F4
 
+// Message Constants
+#define FRAME_CONTROL 0b1000100001000001
+#define MSG_LEN 127
+#define SEQ_NUM_IND 2
+#define PAN_IND 3
+#define DEST_IND 5
+#define SOURCE_IND 7
+#define DATA_IND 9
+
 void printBytes(byte* data, int n);
 
-void DW_init(int selectPin, int networkId, int address);
+void DW_init(int selectPin, int irq, int networkId, int address);
 
 void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();
 unsigned int DW_getNetworkId();
+
+void DW_sendMessage(byte* data, int len, int destination);
 
 #endif

@@ -6,14 +6,15 @@
 #define NETWORK_ID 0
 
 #define SELECT_PIN 10
-#define IRQ_PIN 2
+#define IRQ 0
 
 int main(void)
 {
    init();
    Serial.begin(9600);
-   DW_init(SELECT_PIN, NETWORK_ID, CHIP_ADDR);
+   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR);
    byte devId[4];
+   DW_sendMessage(devId, 4, 0xFFFF);
    while (1) {
       DW_getDevID(devId);
       printBytes(devId, 4);
