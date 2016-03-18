@@ -107,13 +107,10 @@
 
 void printBytes(byte* data, int n);
 
-void DW_init(int selectPin);
+void DW_init(int selectPin, int networkId, int address);
 
 void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();
 unsigned int DW_getNetworkId();
-
-void DW_setAddr(unsigned int addr);
-void DW_setNetworkId(unsigned int id);
 
 #endif

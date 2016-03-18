@@ -4,10 +4,12 @@ int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* he
 void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
 void _setTxConfig(unsigned int msg_len);
+void _valToBytes(long val, byte* bytes, int n);
+void _setNetworkAddr(unsigned int networkId, unsigned int addr);
 
 int _selectPin;
 
-void DW_init(int selectPin) {
+void DW_init(int selectPin, int networkId, int address) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
@@ -21,25 +23,24 @@ void DW_init(int selectPin) {
 	long settings = CONFIG_SETTINGS;
 	_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
 
-	_setTxConfig(0);
+	_setNetworkAddr(networkId, address);
 }
 
 void DW_getDevID(byte* devId) {
 	_readRegister(DEVICE_ID_ADDR, false, 0, devId, 4);
 }
 
-void DW_setAddr(unsigned int addr) {
-	_writeRegister(NETWORK_ADDR_ADDR, true, ADDR_SUB, (byte*)&addr, 2);
+void _setNetworkAddr(unsigned int networkId, unsigned int addr) {
+	byte data[4];
+	_valToBytes(addr, data, 2);
+	_valToBytes(networkId, data + 2, 2);
+	_writeRegister(NETWORK_ADDR_ADDR, false, 0, data, 4);
 }
 
 unsigned int DW_getAddr() {
 	int addr;
 	_readRegister(NETWORK_ADDR_ADDR, true, ADDR_SUB, (byte*)&addr, 2);
 	return addr;
-}
-
-void DW_setNetworkId(unsigned int id) {
-	_writeRegister(NETWORK_ADDR_ADDR, true, NETWORK_ID_SUB, (byte*)&id, 2);
 }
 
 unsigned int DW_getNetworkId() {
@@ -50,9 +51,20 @@ unsigned int DW_getNetworkId() {
 
 void _setTxConfig(unsigned int msg_len) {
 	byte config[5];
-	*((unsigned long*)config) = TX_SETTINGS | (unsigned long)msg_len;
+	long modifiedSettings = TX_SETTINGS | (unsigned long)msg_len;
+	_valToBytes(modifiedSettings, config, 4);
 	config[4] = IFS_DELAY;
 	_writeRegister(TX_CONFIG_ADDR, false, 0, config, 5);
+}
+
+void _valToBytes(long val, byte* bytes, int n) {
+	for (int i = 0; i < n; ++i) {
+		bytes[i] = ((val >> (i * 8)) & 0xFF);
+	}
+}
+
+void _setAntennaDelays() {
+
 }
 
 int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header) {
@@ -88,7 +100,6 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	delayMicroseconds(50);
 }
 
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
@@ -105,7 +116,6 @@ void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, u
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	delayMicroseconds(50);
 }
 
 void printBytes(byte* data, int n) {

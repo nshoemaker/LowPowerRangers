@@ -12,14 +12,11 @@ int main(void)
 {
    init();
    Serial.begin(9600);
-   DW_init(SELECT_PIN);
+   DW_init(SELECT_PIN, NETWORK_ID, CHIP_ADDR);
    byte devId[4];
    while (1) {
       DW_getDevID(devId);
       printBytes(devId, 4);
-
-      DW_setAddr(CHIP_ADDR);
-      DW_setNetworkId(NETWORK_ID);
 
       Serial.print("Address: ");
       Serial.println(DW_getAddr());
