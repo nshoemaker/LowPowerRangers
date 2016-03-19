@@ -19,11 +19,14 @@ byte msgData[MSG_LEN];
 int _selectPin;
 int _networkId;
 int _addr;
+bool _sending = false;
+bool _receiving = false;
 
 void DW_init(int selectPin, int irq, int networkId, int address) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
+	SPI.usingInterrupt(irq);
 
 	_networkId = networkId;
 	_addr = address;
@@ -71,7 +74,7 @@ unsigned int DW_getNetworkId() {
 
 void _setTxConfig(unsigned int msg_len) {
 	byte config[5];
-	long modifiedSettings = TX_SETTINGS | (unsigned long)msg_len;
+	long modifiedSettings = TX_SETTINGS | (unsigned long)(msg_len + 2);
 	_valToBytes(modifiedSettings, config, 4);
 	config[4] = IFS_DELAY;
 	_writeRegister(TX_CONFIG_ADDR, false, 0, config, 5);
@@ -140,20 +143,39 @@ void _setWeirdRegisters() {
 }
 
 void _setInterruptMasks() {
-	byte data[5];
+	byte data[4];
 	long mask = 0;
 	mask |= 1L << TX_DONE_BIT;
 	mask |= 1L << RX_DONE_BIT;
 	_valToBytes(mask, data, 4);
-	data[4] = 0;
-	_writeRegister(INTERRUPT_MASK_ADDR, false, 0, data, 5);
+	long status = 0;
+	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	_writeRegister(INTERRUPT_MASK_ADDR, false, 0, data, 4);
 }
 
 void _handleInterrupt() {
-	byte status[5];
-	_readRegister(STATUS_ADDR, false, 0, status, 5);
-	Serial.print("Status: ");
-	printBytes(status, 5);	
+	Serial.println("Ima let you finish...");
+	long status;
+	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	// TX_DONE
+	if (status & (1L << TX_DONE_BIT)) {
+		_sending = false;
+		Serial.println("Sent");
+
+	}
+	if (status & (1L << RX_DONE_BIT)) {
+		_receiving = false;
+		Serial.print("Received: ");
+		byte length;
+		_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &length, 1);
+		length &= 0x7f;
+		_readRegister(RX_BUFF_ADDR, false, 0, msgData, length);
+		printBytes(msgData, length);
+	}
+}
+
+void DW_sendBroadcast(byte* data, int len) {
+	_sendMessage(data, len, 0xFFFF, 0xFFFF);	
 }
 
 void DW_sendMessage(byte* data, int len, int destination) {
@@ -161,6 +183,7 @@ void DW_sendMessage(byte* data, int len, int destination) {
 }
 
 void _sendMessage(byte* data, int len, int destination, int network) {
+	_sending = true;
 	// Generate the frame
 	_valToBytes(FRAME_CONTROL, msgData, 2);
 	msgData[SEQ_NUM_IND] = 0;
@@ -173,6 +196,13 @@ void _sendMessage(byte* data, int len, int destination, int network) {
 	_setTxConfig(DATA_IND + len);
 	long control = 0;
 	control |= 1L << TX_START_BIT;
+	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+}
+
+void DW_receiveMessage() {
+	_receiving = true;
+	long control = 0;
+	control |= 1L << RX_START_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
 
@@ -234,4 +264,12 @@ void printBytes(byte* data, int n) {
       	Serial.print(tmp);
       }
       Serial.println();
+}
+
+bool DW_isSending() {
+	return _sending;
+}
+
+bool DW_isReceiving() {
+	return _receiving;
 }

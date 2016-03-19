@@ -13,17 +13,12 @@ int main(void)
    init();
    Serial.begin(9600);
    DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR);
-   byte devId[4];
-   DW_sendMessage(devId, 4, 0xFFFF);
+   int counter = 0;
+
    while (1) {
-      DW_getDevID(devId);
-      printBytes(devId, 4);
-
-      Serial.print("Address: ");
-      Serial.println(DW_getAddr());
-      Serial.print("Network: ");
-      Serial.println(DW_getNetworkId());
-
+      if (!DW_isSending()) {
+         DW_sendBroadcast((byte*)&counter, 2);
+      }
       delay(500);
    }
    return 0;

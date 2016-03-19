@@ -127,5 +127,11 @@ unsigned int DW_getAddr();
 unsigned int DW_getNetworkId();
 
 void DW_sendMessage(byte* data, int len, int destination);
+void DW_sendBroadcast(byte* data, int len);
+
+void DW_receiveMessage();
+
+bool DW_isSending();
+bool DW_isReceiving();
 
 #endif
