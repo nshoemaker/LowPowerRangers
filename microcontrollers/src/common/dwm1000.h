@@ -40,6 +40,7 @@
 #define TX_CAL_ADDR 0x2A
 #define FS_CTRL_ADDR 0x2B
 #define LDE_ADDR 0x2E
+#define PWR_MGMT_ADDR 0x36
 
 // Sub-addresses
 // NETWORK_ADDR_ADDR
@@ -74,11 +75,20 @@
 #define RX_ANT_DELAY_SUB 0x1804
 #define LDE2_SUB 0x1806
 #define LDE_REPC_SUB 0x2804
+// PWR_MGMT_ADDR
+#define PWR_MGMT0_SUB 0x00
 
 // Interrupt Bits
 #define TX_DONE_BIT 7
 #define RX_DONE_BIT 13
 #define RX_VALID_BIT 14
+#define PREAMBLE_ERR_BIT 26
+#define HEADER_ERR_BIT 12
+//				  3322 2222 2222 1111 1111 1100 0000 0000
+//				  1098 7654 3210 9876 5432 1098 7654 3210
+
+//				  0000 0100 0000 0001 0001 0000 0000 0000
+#define RX_ERRS 0b00000100000000010001000000000000L
 
 // System Control Bits
 #define TX_START_BIT 1
@@ -118,6 +128,9 @@
 #define SOURCE_IND 7
 #define DATA_IND 9
 
+extern byte msgData[MSG_LEN];
+extern byte msgLen;
+
 void printBytes(byte* data, int n);
 
 void DW_init(int selectPin, int irq, int networkId, int address);
@@ -133,5 +146,8 @@ void DW_receiveMessage();
 
 bool DW_isSending();
 bool DW_isReceiving();
+bool DW_receiveFailed();
+
+void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
 
 #endif

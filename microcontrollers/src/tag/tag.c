@@ -17,7 +17,9 @@ int main(void)
 
    while (1) {
       if (!DW_isSending()) {
+         Serial.println("sending");
          DW_sendBroadcast((byte*)&counter, 2);
+         counter++;
       }
       delay(500);
    }

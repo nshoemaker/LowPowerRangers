@@ -13,21 +13,27 @@ void _setWeirdRegisters();
 void _setInterruptMasks();
 void _handleInterrupt();
 void _sendMessage(byte* data, int len, int destination, int network);
+void _softReset();
+void _handleError();
+
 
 byte msgData[MSG_LEN];
+byte msgLen = 0;
 
 int _selectPin;
 int _networkId;
 int _addr;
 bool _sending = false;
 bool _receiving = false;
+bool _receiveFailed = false;
+byte _irq;
 
 void DW_init(int selectPin, int irq, int networkId, int address) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
-	SPI.usingInterrupt(irq);
 
+	_irq = irq;
 	_networkId = networkId;
 	_addr = address;
 
@@ -38,6 +44,8 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	DW_getAddr();
 	delay(100);
 
+	_softReset();
+
 	long settings = CONFIG_SETTINGS;
 	_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
 
@@ -47,6 +55,7 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_setChannel();
 	_setTransmitPower();
 	_setWeirdRegisters();
+	Serial.println(DW_getAddr());
 }
 
 void DW_getDevID(byte* devId) {
@@ -147,6 +156,8 @@ void _setInterruptMasks() {
 	long mask = 0;
 	mask |= 1L << TX_DONE_BIT;
 	mask |= 1L << RX_DONE_BIT;
+	mask |= 1L << PREAMBLE_ERR_BIT;
+	mask |= 1L << HEADER_ERR_BIT;
 	_valToBytes(mask, data, 4);
 	long status = 0;
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
@@ -154,24 +165,34 @@ void _setInterruptMasks() {
 }
 
 void _handleInterrupt() {
-	Serial.println("Ima let you finish...");
 	long status;
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	// TX_DONE
 	if (status & (1L << TX_DONE_BIT)) {
 		_sending = false;
-		Serial.println("Sent");
-
+	}
+	if (status & (RX_ERRS)) {
+		_handleError();
+		return;
 	}
 	if (status & (1L << RX_DONE_BIT)) {
-		_receiving = false;
-		Serial.print("Received: ");
-		byte length;
-		_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &length, 1);
-		length &= 0x7f;
-		_readRegister(RX_BUFF_ADDR, false, 0, msgData, length);
-		printBytes(msgData, length);
+		if (status & (1L << RX_VALID_BIT)) {
+			_receiving = false;
+			_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &msgLen, 1);
+			msgLen &= 0x7f;
+			_readRegister(RX_BUFF_ADDR, false, 0, msgData, msgLen);
+		} else {
+			_handleError();
+		}
 	}
+}
+
+void _handleError() {
+	_receiving = false;
+	_receiveFailed = true;
+	_softReset();
+	long status = RX_ERRS;
+	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 }
 
 void DW_sendBroadcast(byte* data, int len) {
@@ -200,9 +221,24 @@ void _sendMessage(byte* data, int len, int destination, int network) {
 }
 
 void DW_receiveMessage() {
+	msgLen = 0;
+	_receiveFailed = false;
 	_receiving = true;
 	long control = 0;
 	control |= 1L << RX_START_BIT;
+	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+}
+
+void _softReset() {
+	byte data[4];
+	_readRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+	data[3] = 0xE0;
+	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+	data[3] = 0xF0;
+	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+
+	long control = 0;
+	control |= 1L << CANCEL_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
 
@@ -229,6 +265,7 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	byte header[3];
 	int headerLen = _makeHeader(READ, addr, isOffset, offset, header);
 
+	detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -239,12 +276,14 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
+	attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
 	byte header[3];
 	int headerLen = _makeHeader(WRITE, addr, isOffset, offset, header);
 
+	detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -255,6 +294,7 @@ void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, u
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
+	attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void printBytes(byte* data, int n) {
@@ -272,4 +312,8 @@ bool DW_isSending() {
 
 bool DW_isReceiving() {
 	return _receiving;
+}
+
+bool DW_receiveFailed() {
+	return _receiveFailed;
 }
