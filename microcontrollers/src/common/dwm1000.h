@@ -39,6 +39,7 @@
 #define RF_CONF_ADDR 0x28
 #define TX_CAL_ADDR 0x2A
 #define FS_CTRL_ADDR 0x2B
+#define OTP_ADDR 0x2D
 #define LDE_ADDR 0x2E
 #define PWR_MGMT_ADDR 0x36
 
@@ -77,6 +78,8 @@
 #define LDE_REPC_SUB 0x2804
 // PWR_MGMT_ADDR
 #define PWR_MGMT0_SUB 0x00
+//OTP_ADDR
+#define OTP_CTRL_SUB 0x06
 
 // Interrupt Bits
 #define TX_DONE_BIT 7
@@ -87,8 +90,9 @@
 //				  3322 2222 2222 1111 1111 1100 0000 0000
 //				  1098 7654 3210 9876 5432 1098 7654 3210
 
-//				  0000 0100 0000 0001 0001 0000 0000 0000
-#define RX_ERRS 0b00000100000000010001000000000000L
+//				  0000 0100 0000 0101 0001 0000 0000 0000
+#define RX_ERRS 0b00000100000001010001000000000000L
+#define RX_BITS 0x0407FF00L
 
 // System Control Bits
 #define TX_START_BIT 1
@@ -118,6 +122,7 @@
 #define FS_PLL_TUNE 0x26
 #define LDE2 0x0607
 #define LDE_REPC 0x28F4
+#define OTP_CTRL 0x8000
 
 // Message Constants
 #define FRAME_CONTROL 0b1000100001000001
@@ -147,7 +152,5 @@ void DW_receiveMessage();
 bool DW_isSending();
 bool DW_isReceiving();
 bool DW_receiveFailed();
-
-void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n);
 
 #endif

@@ -16,16 +16,12 @@ int main(void)
    long status;
 
    while (1) {
-   	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-   	printBytes((byte*)&status, 4);
-
       if (!DW_isReceiving()) {
       	if (DW_receiveFailed()) {
       		Serial.println("Bad Message");
       	} else if (msgLen > 0) {
       		printBytes(msgData, msgLen);
       	}
-
       	DW_receiveMessage();
       }
       delay(500);

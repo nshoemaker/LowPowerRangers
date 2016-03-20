@@ -55,7 +55,6 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_setChannel();
 	_setTransmitPower();
 	_setWeirdRegisters();
-	Serial.println(DW_getAddr());
 }
 
 void DW_getDevID(byte* devId) {
@@ -146,9 +145,12 @@ void _setWeirdRegisters() {
 	_writeRegister(FS_CTRL_ADDR, true, FS_PLL_TUNE_SUB, (byte*)&data, 1);
 
 	data = LDE2;
-	_writeRegister(LDE_ADDR, true, LDE2_SUB, (byte*)&delay, 2);
+	_writeRegister(LDE_ADDR, true, LDE2_SUB, (byte*)&data, 2);
 	data = LDE_REPC;
-	_writeRegister(LDE_ADDR, true, LDE_REPC_SUB, (byte*)&delay, 2);
+	_writeRegister(LDE_ADDR, true, LDE_REPC_SUB, (byte*)&data, 2);
+
+	data = OTP_CTRL;
+	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&data, 2);	
 }
 
 void _setInterruptMasks() {
@@ -181,6 +183,8 @@ void _handleInterrupt() {
 			_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &msgLen, 1);
 			msgLen &= 0x7f;
 			_readRegister(RX_BUFF_ADDR, false, 0, msgData, msgLen);
+			status = RX_BITS;
+			_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 		} else {
 			_handleError();
 		}
