@@ -8,20 +8,33 @@
 #define SELECT_PIN 10
 #define IRQ 0
 
+bool receiving = false;
+
+void rxFailCallback() {
+	receiving = false;
+	Serial.println("Bad Message!!!");
+}
+
+void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
+	receiving = false;
+	int count = *((int*)data);
+	Serial.print(srcAddr);
+	Serial.print(" sent ");
+	Serial.print(count);
+	Serial.print(" at: ");
+	printBytes(t->time, 5);
+}
+
 int main(void)
 {
    init();
    Serial.begin(9600);
    DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR);
-   long status;
-
+   DW_setReceivedCallback(&rxCallback);
+   DW_setReceiveFailedCallback(&rxFailCallback);
    while (1) {
-      if (!DW_isReceiving()) {
-      	if (DW_receiveFailed()) {
-      		Serial.println("Bad Message");
-      	} else if (msgLen > 0) {
-      		printBytes(msgData, msgLen);
-      	}
+      if (!receiving) {
+      	receiving = true;
       	DW_receiveMessage();
       }
       delay(500);
