@@ -15,7 +15,9 @@ void _handleInterrupt();
 void _sendMessage(byte* data, int len, int destination, int network);
 void _softReset();
 void _handleError();
-
+void _getRxTimestamp(Timestamp* t);
+void _getTxTimestamp(Timestamp* t);
+void _reverseBytes(byte* b, int len);
 
 byte msgData[MSG_LEN];
 byte msgLen = 0;
@@ -23,10 +25,11 @@ byte msgLen = 0;
 int _selectPin;
 int _networkId;
 int _addr;
-bool _sending = false;
-bool _receiving = false;
-bool _receiveFailed = false;
 byte _irq;
+
+void (*rxFailCallback)(void) = NULL;
+void (*rxCallback)(Timestamp* t, byte* data, int len, int srcAddr) = NULL;
+void (*txCallback)(Timestamp* t) = NULL;
 
 void DW_init(int selectPin, int irq, int networkId, int address) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
@@ -171,7 +174,11 @@ void _handleInterrupt() {
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	// TX_DONE
 	if (status & (1L << TX_DONE_BIT)) {
-		_sending = false;
+		if (txCallback) {
+			Timestamp t;
+			_getTxTimestamp(&t);
+			txCallback(&t);
+		}
 	}
 	if (status & (RX_ERRS)) {
 		_handleError();
@@ -179,12 +186,19 @@ void _handleInterrupt() {
 	}
 	if (status & (1L << RX_DONE_BIT)) {
 		if (status & (1L << RX_VALID_BIT)) {
-			_receiving = false;
 			_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &msgLen, 1);
 			msgLen &= 0x7f;
 			_readRegister(RX_BUFF_ADDR, false, 0, msgData, msgLen);
 			status = RX_BITS;
 			_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+			if (rxCallback) {
+				Timestamp t;
+				_getRxTimestamp(&t);
+				int srcAddr = *((int*)(msgData + SOURCE_IND));
+				int dataLen = msgLen - DATA_IND - 2;
+				//_reverseBytes(msgData + DATA_IND, dataLen);
+				rxCallback(&t, msgData + DATA_IND, dataLen, srcAddr);
+			}
 		} else {
 			_handleError();
 		}
@@ -192,11 +206,12 @@ void _handleInterrupt() {
 }
 
 void _handleError() {
-	_receiving = false;
-	_receiveFailed = true;
 	_softReset();
 	long status = RX_ERRS;
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	if (rxFailCallback) {
+		rxFailCallback();
+	}
 }
 
 void DW_sendBroadcast(byte* data, int len) {
@@ -208,7 +223,6 @@ void DW_sendMessage(byte* data, int len, int destination) {
 }
 
 void _sendMessage(byte* data, int len, int destination, int network) {
-	_sending = true;
 	// Generate the frame
 	_valToBytes(FRAME_CONTROL, msgData, 2);
 	msgData[SEQ_NUM_IND] = 0;
@@ -226,8 +240,6 @@ void _sendMessage(byte* data, int len, int destination, int network) {
 
 void DW_receiveMessage() {
 	msgLen = 0;
-	_receiveFailed = false;
-	_receiving = true;
 	long control = 0;
 	control |= 1L << RX_START_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
@@ -265,11 +277,19 @@ int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* he
 	return headerLen;
 }
 
+void _getRxTimestamp(Timestamp* t) {
+	_readRegister(RX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, t->time, 5);
+}
+
+void _getTxTimestamp(Timestamp* t) {
+	_readRegister(TX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, t->time, 5);
+}
+
 void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
 	byte header[3];
 	int headerLen = _makeHeader(READ, addr, isOffset, offset, header);
 
-	detachInterrupt(_irq);
+	//detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -280,14 +300,14 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	attachInterrupt(_irq, _handleInterrupt, RISING);
+	//attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
 	byte header[3];
 	int headerLen = _makeHeader(WRITE, addr, isOffset, offset, header);
 
-	detachInterrupt(_irq);
+	//detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -298,7 +318,7 @@ void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, u
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	attachInterrupt(_irq, _handleInterrupt, RISING);
+	//attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void printBytes(byte* data, int n) {
@@ -310,14 +330,23 @@ void printBytes(byte* data, int n) {
       Serial.println();
 }
 
-bool DW_isSending() {
-	return _sending;
+void _reverseBytes(byte* b, int len) {
+	byte temp;
+	for (int i = 0; i < len/2; i++) {
+		temp = b[i];
+		b[i] = b[len - i - 1];
+		b[len - i - 1] = temp;
+	}
 }
 
-bool DW_isReceiving() {
-	return _receiving;
+void DW_setSentCallback(void (*cb)(Timestamp*)) {
+	txCallback = cb;
 }
 
-bool DW_receiveFailed() {
-	return _receiveFailed;
+void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int)) {
+	rxCallback = cb;
+}
+
+void DW_setReceiveFailedCallback(void (*cb)(void)) {
+	rxFailCallback = cb;
 }

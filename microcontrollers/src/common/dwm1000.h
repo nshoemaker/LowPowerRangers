@@ -4,6 +4,10 @@
 #include <HardwareSerial.h>
 #include <SPI.h>
 
+struct Timestamp {
+	byte time[5];
+};
+
 // SPI Header Values
 #define READ 0b00000000
 #define WRITE 0b10000000
@@ -149,8 +153,8 @@ void DW_sendBroadcast(byte* data, int len);
 
 void DW_receiveMessage();
 
-bool DW_isSending();
-bool DW_isReceiving();
-bool DW_receiveFailed();
+void DW_setSentCallback(void (*cb)(Timestamp*));
+void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int));
+void DW_setReceiveFailedCallback(void (*cb)(void));
 
 #endif
