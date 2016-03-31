@@ -1,1 +1,7 @@
-The app idea is to make an Android mobile application which can use data it receives from the server to show the most recent position of the tag being tagged. It will allow the user to add new tags by entering their tag ID and a name for them. 
+The app idea is to make an Android mobile application which can use data it receives from the server to show the most recent position of the tag being tagged. To do this the Android app will connect to the website and pull information and update the locations of the tags on screen.
+
+The main screen will have dots whcih move around representing different tags. A mockup is attached below - 
+
+![alt tag](https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/Images/Overall%20App%20Design.png)
+
+It will allow the user to add new tags by entering their tag ID and a name for them. 
