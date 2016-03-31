@@ -2,6 +2,6 @@ The app idea is to make an Android mobile application which can use data it rece
 
 The main screen will have dots whcih move around representing different tags. A mockup is attached below - 
 
-[[https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/Images/Overall%20App%20Design.png|alt=octocat]]
+![alt text](https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/Images/Overall%20App%20Design.png "Logo Title Text 1")
 
 It will allow the user to add new tags by entering their tag ID and a name for them. 
