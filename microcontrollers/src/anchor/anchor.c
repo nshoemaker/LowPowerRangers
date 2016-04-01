@@ -22,7 +22,7 @@ void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
 	Serial.print(" sent ");
 	Serial.print(count);
 	Serial.print(" at: ");
-	printBytes(t->time, 5);
+	printTime(t);
 }
 
 int main(void)

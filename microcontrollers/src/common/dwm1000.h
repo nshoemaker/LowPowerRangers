@@ -5,7 +5,7 @@
 #include <SPI.h>
 
 struct Timestamp {
-	byte time[5];
+	long long time;
 };
 
 // SPI Header Values
@@ -137,6 +137,9 @@ struct Timestamp {
 #define SOURCE_IND 7
 #define DATA_IND 9
 
+// Timestamp Stuff
+#define US_TO_TIMESTAMP 63897.6
+
 extern byte msgData[MSG_LEN];
 extern byte msgLen;
 
@@ -156,5 +159,12 @@ void DW_receiveMessage();
 void DW_setSentCallback(void (*cb)(Timestamp*));
 void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int));
 void DW_setReceiveFailedCallback(void (*cb)(void));
+
+// Timestamp functions
+void printTime(Timestamp* t);
+void setTime(Timestamp* t, long us);
+void addTime(Timestamp* t, long us);
+// Returns t1-t2 in t1
+void timeDiff(Timestamp* t1, Timestamp* t2);
 
 #endif
