@@ -293,9 +293,81 @@
 								<div class="container">
 									<h3>Architecture</h3>
 									<div class="inline_block">
-										<p>Below is an architectural diagram of our system including possible client applications. This diagram is meant to show the system structure and communication types. The blue boundary represents our system boundary. The purple boundary is meant to represent the physical and logical boundary of each Anchor/Tag. </p>
+										<p>Below is a physical architectural diagram of our system including possible client applications. This diagram is meant to show the system structure and communication types. The blue boundary represents our system boundary. The purple boundary is meant to represent the physical and logical boundary of each Anchor/Tag. </p>
+										<p>UWB communication is used to obtain the range data between each of the Anchors and the Tag using TOF analysis. Microcontrollers on each Tag/Anchor talk to the DWM1000 chip through SPI. Once each of the Anchors know their distance from the Tag, this information will be sent to the Raspberry Pi, along with the Tag ID. The Raspberry Pi will then compute the angle of arrival based on the two range estimates and the known distance between the Anchors. Once the angle of arrival is calculated, the range between the Tag and the midpoint of the Anchors will be calculated and these two pieces of data will be sent to the web server, with the Tag and measurement device IDs, through an internal API call. </p>
 										<img src="images/arch.png" alt="">
 								</div>
+								</div>
+							</section>
+
+							<!-- Interaction Diagrams -->
+							<section id="arch">
+								<div class="container">
+									<h3>Interaction Diagrams</h3>
+									<div class="inline_block">
+										<h4>API-level Interaction</h4>
+										<p>At a higher level, our project itself has very little user interaction (by design, for ease of use); the user simply needs to carry a Tag with them while in the presence of a measurement device to use the system itself. However, here is what we would expect user interaction with a client application to look like:</p>
+										<img src="images/user_interaction.JPG" alt="">
+									</div>
+
+									<div class="inline_block">
+										<h4>Internal Sysem Interaction</h4>
+										<p>The goal of our system is to collect range and angle of arrival information about a single Tag, relative to a measurement device, over a period of time and create a web API from which applications can retrieve this information. </p>
+										<p>The diagram shows the interaction between various components going through the process of collecting range and angle of arrival information for a single point in time.</p>
+									<p>
+										<span class="image left"><img src="images/RangeInteraction.png" alt="" /></span>
+										<h5>Steps:</h5>
+										<ol>
+											<li><b>Poll</b> - Tag polls both Anchors in a broadcasted message.</li>
+											<li><b>ResponseA</b> - Anchor A sends response to Tag.</li>
+											<li><b>ResponseB</b> - Anchor B sends response to Tag.</li>
+											<li><b>Final</b> - Tag broadcasts Final message to Anchors containing enough information for each Anchor to estimate range.</li>
+											<li>Anchors tell Raspberry Pi their newly calculated range values. </li>
+											<li>Raspberry Pi calculates angle of arrival and then makes API call to store new data on the Webserver. </li>
+									</p>
+									</div>
+
+
+									<div class="inline_block">
+										<h4>Ranging Protocol</h4>
+										<p>At an even lower level, we need to define a ranging protocol across DWM1000s. </p>
+										<p>For our protocol, we chose a variant of the Broadcast-Double-Sided Ranging (BDSR) protocol. This protocol has the Tag broadcast its messages, and lets all other devices respond in a staggered format.</p>
+										<p>Below is a diagram showing the BDSR protocol with three anchors where Tprop is the propagation time between the Tag and the corresponding Anchor. </p>
+									</div>
+
+									<div class="inline_block">
+										<img class="smallwidth" src="images/bdsr.JPG" alt="">
+									</div>
+
+									<div class="inline_block">
+										<p>We chose to implement a variant of BDSR with only two Anchors.</p>
+										<img src="images/RangeLargeText.png" alt="">
+										<p>Message data sent throughout different steps of protocol:</p>
+
+											<table class="alt">
+												<thead>
+													<tr>
+														<th>Protocol Step</th>
+														<th>Data Sent</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td>Poll/td>
+														<td>Range Session ID, Tag Address</td>
+													</tr>
+													<tr>
+														<td>Response</td>
+														<td>Range Session ID, Anchor ID</td>
+													</tr>
+													<tr>
+														<td>Final</td>
+														<td>Range Session ID, Tag Address, Tround1A, Treply2A, Treply1B, Treply2B</td>
+													</tr>
+												</tbody>
+											</table>
+										<p>One thing to note is that, at the end of our protocol, the information necessary to calculate propagation times is available on the Anchors but not the Tags. This is okay for our use case because (as you can see in the sytem interaction diagram) the Anchors are the ones who send the Raspi the range data, not the Tags. </p>
+									</div>
 								</div>
 							</section>
 
