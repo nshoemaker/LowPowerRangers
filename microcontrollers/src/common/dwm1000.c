@@ -181,6 +181,7 @@ void _handleInterrupt() {
 		}
 	}
 	if (status & (RX_ERRS)) {
+		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
 	}
@@ -200,6 +201,7 @@ void _handleInterrupt() {
 				rxCallback(&t, msgData + DATA_IND, dataLen, srcAddr);
 			}
 		} else {
+			printBytes((byte*)&status, 4);
 			_handleError();
 		}
 	}
@@ -207,11 +209,13 @@ void _handleInterrupt() {
 
 void _handleError() {
 	_softReset();
-	long status = RX_ERRS;
+	long status = RX_ERRS | (1L << RX_VALID_BIT);
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	if (rxFailCallback) {
 		rxFailCallback();
 	}
+	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	printBytes((byte*)&status, 4);
 }
 
 void DW_sendBroadcast(byte* data, int len) {
@@ -256,6 +260,8 @@ void _softReset() {
 	long control = 0;
 	control |= 1L << CANCEL_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+	long d = OTP_CTRL;
+	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
 }
 
 int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header) {
@@ -278,11 +284,13 @@ int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* he
 }
 
 void _getRxTimestamp(Timestamp* t) {
-	_readRegister(RX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, t->time, 5);
+	t->time = 0;
+	_readRegister(RX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, (byte*)&(t->time), 5);
 }
 
 void _getTxTimestamp(Timestamp* t) {
-	_readRegister(TX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, t->time, 5);
+	t->time = 0;
+	_readRegister(TX_TIMESTAMP_ADDR, true, TIMESTAMP_SUB, (byte*)&(t->time), 5);
 }
 
 void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
@@ -349,4 +357,21 @@ void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int)) {
 
 void DW_setReceiveFailedCallback(void (*cb)(void)) {
 	rxFailCallback = cb;
+}
+
+void printTime(Timestamp* t) {
+	long temp = t->time / US_TO_TIMESTAMP;
+	Serial.println(temp);
+}
+
+void setTime(Timestamp* t, long us) {
+	t->time = (long long )us * US_TO_TIMESTAMP;
+}
+
+void addTime(Timestamp* t, long us) {
+	t->time += (long long )us * US_TO_TIMESTAMP;
+}
+// Returns t1-t2 in t1
+void timeDiff(Timestamp* t1, Timestamp* t2) {
+	t1->time -= t2->time;
 }
