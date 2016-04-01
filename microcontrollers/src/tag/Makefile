@@ -104,8 +104,13 @@ ifndef NO_ARDUINO
 	EXTRAINCDIRS += $(ARDDIR)/hardware/attiny/variants/tiny8
 	endif
 	# add Arduino sources and include directories to PSRC and EXTRAINCDIRS
-	PSRC += $(filter-out $(ARDCOREDIR)/main.cpp, $(wildcard $(ARDCOREDIR)/*.cpp))
-	SRC += $(wildcard $(ARDCOREDIR)/*.c)
+	PSRC += $(ARDCOREDIR)/HardwareSerial.cpp
+	PSRC += $(ARDCOREDIR)/new.cpp
+	PSRC += $(ARDCOREDIR)/Print.cpp
+	PSRC += $(ARDCOREDIR)/WString.cpp
+	SRC += $(ARDCOREDIR)/wiring_digital.c
+	SRC += $(ARDCOREDIR)/wiring.c
+	SRC += $(ARDCOREDIR)/WInterrupts.c
 	PSRC += $(wildcard ../common/*.cpp)
 	SRC += $(wildcard ../common/*.c)
 	EXTRAINCDIRS += $(ARDCOREDIR)

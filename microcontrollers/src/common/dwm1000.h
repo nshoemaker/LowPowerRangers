@@ -1,7 +1,7 @@
 #ifndef DWM1000_H
 #define DWM1000_H
 
-#include <HardwareSerial.h>
+//#include <HardwareSerial.h>
 #include <SPI.h>
 
 struct Timestamp {
@@ -151,8 +151,8 @@ void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();
 unsigned int DW_getNetworkId();
 
-void DW_sendMessage(byte* data, int len, int destination);
-void DW_sendBroadcast(byte* data, int len);
+void DW_sendMessage(byte* data, int len, int destination, Timestamp* t);
+void DW_sendBroadcast(byte* data, int len, Timestamp* t);
 
 void DW_receiveMessage();
 
@@ -163,7 +163,7 @@ void DW_setReceiveFailedCallback(void (*cb)(void));
 // Timestamp functions
 void printTime(Timestamp* t);
 void setTime(Timestamp* t, long us);
-void addTime(Timestamp* t, long us);
+void addTime(Timestamp* t1, Timestamp* t2);
 // Returns t1-t2 in t1
 void timeDiff(Timestamp* t1, Timestamp* t2);
 

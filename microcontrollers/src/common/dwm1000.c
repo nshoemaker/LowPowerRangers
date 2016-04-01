@@ -12,7 +12,7 @@ void _setTransmitPower();
 void _setWeirdRegisters();
 void _setInterruptMasks();
 void _handleInterrupt();
-void _sendMessage(byte* data, int len, int destination, int network);
+void _sendMessage(byte* data, int len, int destination, int network, Timestamp* t);
 void _softReset();
 void _handleError();
 void _getRxTimestamp(Timestamp* t);
@@ -218,15 +218,15 @@ void _handleError() {
 	printBytes((byte*)&status, 4);
 }
 
-void DW_sendBroadcast(byte* data, int len) {
-	_sendMessage(data, len, 0xFFFF, 0xFFFF);	
+void DW_sendBroadcast(byte* data, int len, Timestamp* t) {
+	_sendMessage(data, len, 0xFFFF, 0xFFFF, t);	
 }
 
-void DW_sendMessage(byte* data, int len, int destination) {
-	_sendMessage(data, len, destination, _networkId);
+void DW_sendMessage(byte* data, int len, int destination, Timestamp* t) {
+	_sendMessage(data, len, destination, _networkId, t);
 }
 
-void _sendMessage(byte* data, int len, int destination, int network) {
+void _sendMessage(byte* data, int len, int destination, int network, Timestamp* t) {
 	// Generate the frame
 	_valToBytes(FRAME_CONTROL, msgData, 2);
 	msgData[SEQ_NUM_IND] = 0;
@@ -239,6 +239,11 @@ void _sendMessage(byte* data, int len, int destination, int network) {
 	_setTxConfig(DATA_IND + len);
 	long control = 0;
 	control |= 1L << TX_START_BIT;
+	if (t){
+		control |= 1L << TX_DELAY_BIT;
+		t->time &= 0x000000FFFFFFFE00;
+		_writeRegister(DELAY_ADDR, false, 0, (byte*)&(t->time), 5);	
+	}
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
 
@@ -333,9 +338,9 @@ void printBytes(byte* data, int n) {
 	char tmp[3];
 	for (int i = n - 1; i >= 0; --i) {
       	sprintf(tmp, "%.2X", data[i]);
-      	Serial.print(tmp);
+      	//Serial.print(tmp);
       }
-      Serial.println();
+      //Serial.println();
 }
 
 void _reverseBytes(byte* b, int len) {
@@ -361,16 +366,18 @@ void DW_setReceiveFailedCallback(void (*cb)(void)) {
 
 void printTime(Timestamp* t) {
 	long temp = t->time / US_TO_TIMESTAMP;
-	Serial.println(temp);
+	//Serial.println(temp);
 }
 
 void setTime(Timestamp* t, long us) {
-	t->time = (long long )us * US_TO_TIMESTAMP;
+	t->time = (long long int) (us * US_TO_TIMESTAMP);
 }
 
-void addTime(Timestamp* t, long us) {
-	t->time += (long long )us * US_TO_TIMESTAMP;
+void addTime(Timestamp* t1, Timestamp* t2) {
+	t1->time += t2->time;
+	t1->time %= 0xFFFFFFFFFF;
 }
+
 // Returns t1-t2 in t1
 void timeDiff(Timestamp* t1, Timestamp* t2) {
 	t1->time -= t2->time;
