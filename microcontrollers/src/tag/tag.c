@@ -20,7 +20,7 @@ int main(void)
 {
    init();
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
-   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR);
+   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 0);
    DW_setSentCallback(&txCallback);
    int counter = 0;
    Timestamp t;
