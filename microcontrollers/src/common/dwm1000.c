@@ -31,7 +31,7 @@ void (*rxFailCallback)(void) = NULL;
 void (*rxCallback)(Timestamp* t, byte* data, int len, int srcAddr) = NULL;
 void (*txCallback)(Timestamp* t) = NULL;
 
-void DW_init(int selectPin, int irq, int networkId, int address) {
+void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
@@ -50,6 +50,12 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_softReset();
 
 	long settings = CONFIG_SETTINGS;
+	ts_puts("init\r\n");
+	if (timeout > 0) {
+		ts_puts("setting timeout\r\n");
+		_writeRegister(TO_ADDR, false, 0, (byte*)&timeout, 2);
+		settings |= 1L << TO_ENABLE_BIT;
+	}
 	_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
 
 	_setInterruptMasks();
@@ -58,12 +64,6 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_setChannel();
 	_setTransmitPower();
 	_setWeirdRegisters();
-
-	long control = 0;
-	control |= 1L << CANCEL_BIT;
-	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
-	long d = OTP_CTRL;
-	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
 }
 
 void DW_getDevID(byte* devId) {
@@ -104,9 +104,9 @@ void _valToBytes(long val, byte* bytes, int n) {
 }
 
 void _setAntennaDelays() {
-	int delay = ANT_DELAY;
-	_writeRegister(TX_ANT_DELAY_ADDR, false, 0, (byte*)&delay, 2);
-	_writeRegister(LDE_ADDR, true, RX_ANT_DELAY_SUB, (byte*)&delay, 2);
+	int d = ANT_DELAY;
+	_writeRegister(TX_ANT_DELAY_ADDR, false, 0, (byte*)&d, 2);
+	_writeRegister(LDE_ADDR, true, RX_ANT_DELAY_SUB, (byte*)&d, 2);
 }
 
 void _setTransmitPower() {
@@ -169,6 +169,7 @@ void _setInterruptMasks() {
 	mask |= 1L << RX_DONE_BIT;
 	mask |= 1L << PREAMBLE_ERR_BIT;
 	mask |= 1L << HEADER_ERR_BIT;
+	mask |= 1L << RX_TO_BIT;
 	_valToBytes(mask, data, 4);
 	long status = 0;
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
@@ -178,20 +179,33 @@ void _setInterruptMasks() {
 void _handleInterrupt() {
 	long status;
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	ts_puts("interrupt\r\n");
+	printBytes((byte*)&status, 4);
 	// TX_DONE
 	if (status & (1L << TX_DONE_BIT)) {
+		ts_puts("tx\r\n");
 		if (txCallback) {
 			Timestamp t;
 			_getTxTimestamp(&t);
 			txCallback(&t);
 		}
 	}
+	// RX Timeout
+	if (status & (1L << RX_TO_BIT)) {
+		ts_puts("timeout\r\n");
+		if (rxFailCallback) {
+			rxFailCallback();
+		}
+		_handleError();
+	}
 	if (status & (RX_ERRS)) {
+		ts_puts("rx error\r\n");
 		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
 	}
 	if (status & (1L << RX_DONE_BIT)) {
+		ts_puts("rx done\r\n");
 		if (status & (1L << RX_VALID_BIT)) {
 			_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &msgLen, 1);
 			msgLen &= 0x7f;
@@ -211,9 +225,6 @@ void _handleInterrupt() {
 			_handleError();
 		}
 	}
-	//if (rxFailCallback) {
-	//	rxFailCallback();
-	//}
 }
 
 void _handleError() {
@@ -254,9 +265,16 @@ void _sendMessage(byte* data, int len, int destination, int network, Timestamp* 
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
 
-void DW_receiveMessage() {
+void DW_receiveMessage(Timestamp* d) {
 	msgLen = 0;
 	long control = 0;
+	ts_puts("try to rx\r\n");
+	if (d){
+		ts_puts("delaying\r\n");
+		control |= 1L << RX_DELAY_BIT;
+		d->time &= 0x000000FFFFFFFE00;
+		_writeRegister(DELAY_ADDR, false, 0, (byte*)&(d->time), 5);	
+	}
 	control |= 1L << RX_START_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
@@ -271,6 +289,12 @@ void _softReset() {
 	data[0] = 0x00;
 	data[3] = 0xF0;
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+
+	long control = 0;
+	control |= 1L << CANCEL_BIT;
+	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+	long d = OTP_CTRL;
+	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
 }
 
 int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header) {

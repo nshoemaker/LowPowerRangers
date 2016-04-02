@@ -28,6 +28,7 @@ struct Timestamp {
 #define TX_CONFIG_ADDR 0x08
 #define TX_BUFF_ADDR 0x09
 #define DELAY_ADDR 0x0A
+#define TO_ADDR 0x0C
 #define CONTROL_ADDR 0x0D
 #define INTERRUPT_MASK_ADDR 0x0E
 #define STATUS_ADDR 0x0F
@@ -89,6 +90,7 @@ struct Timestamp {
 #define TX_DONE_BIT 7
 #define RX_DONE_BIT 13
 #define RX_VALID_BIT 14
+#define RX_TO_BIT 17
 #define PREAMBLE_ERR_BIT 26
 #define HEADER_ERR_BIT 12
 //				  3322 2222 2222 1111 1111 1100 0000 0000
@@ -103,6 +105,7 @@ struct Timestamp {
 #define TX_DELAY_BIT 2
 #define CANCEL_BIT 6
 #define RX_START_BIT 8
+#define RX_DELAY_BIT 9
 
 // Configuration
 #define CONFIG_SETTINGS 0b00100000000000000001011111111101L
@@ -137,6 +140,9 @@ struct Timestamp {
 #define SOURCE_IND 7
 #define DATA_IND 9
 
+// Misc
+#define TO_ENABLE_BIT 28
+
 // Timestamp Stuff
 #define US_TO_TIMESTAMP 63897.6
 
@@ -145,7 +151,7 @@ extern byte msgLen;
 
 void printBytes(byte* data, int n);
 
-void DW_init(int selectPin, int irq, int networkId, int address);
+void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout);
 
 void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();
@@ -154,7 +160,7 @@ unsigned int DW_getNetworkId();
 void DW_sendMessage(byte* data, int len, int destination, Timestamp* t);
 void DW_sendBroadcast(byte* data, int len, Timestamp* t);
 
-void DW_receiveMessage();
+void DW_receiveMessage(Timestamp* d);
 
 void DW_setSentCallback(void (*cb)(Timestamp*));
 void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int));
