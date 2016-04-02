@@ -35,13 +35,16 @@ int main(void)
 {
    init();
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
-   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 0);
+   delay(1500);
+   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 100000);
    DW_setReceivedCallback(&rxCallback);
    DW_setReceiveFailedCallback(&rxFailCallback);
+   Timestamp delayTime;
+   delayTime.time = 0xEE0980000;
    while (1) {
       if (!receiving) {
       	receiving = true;
-      	DW_receiveMessage(NULL);
+      	DW_receiveMessage(&delayTime);
       }
       delay(50);
    }
