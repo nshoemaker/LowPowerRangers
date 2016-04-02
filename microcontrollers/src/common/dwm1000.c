@@ -86,6 +86,10 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, p, 2);
 }
 
+void getTime(Timestamp* t) {
+	_readRegister(SYS_TIME_ADDR, false, 0, (byte*)&t->time, 5);
+}
+
 void DW_getDevID(byte* devId) {
 	_readRegister(DEVICE_ID_ADDR, false, 0, devId, 4);
 }

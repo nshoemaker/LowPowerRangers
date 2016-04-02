@@ -25,6 +25,7 @@ struct Timestamp {
 #define DEVICE_ID_ADDR 0x00
 #define NETWORK_ADDR_ADDR 0x03
 #define SYS_CONFIG_ADDR 0x04
+#define SYS_TIME_ADDR 0x06
 #define TX_CONFIG_ADDR 0x08
 #define TX_BUFF_ADDR 0x09
 #define DELAY_ADDR 0x0A
@@ -176,5 +177,6 @@ void printTime(Timestamp* t);
 void addTime(Timestamp* t1, Timestamp* t2);
 // Returns t1-t2 in t1
 void timeDiff(Timestamp* t1, Timestamp* t2);
+void getTime(Timestamp* t);
 
 #endif
