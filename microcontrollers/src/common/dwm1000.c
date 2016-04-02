@@ -13,7 +13,7 @@ void _setWeirdRegisters();
 void _setInterruptMasks();
 void _handleInterrupt();
 void _sendMessage(byte* data, int len, int destination, int network, Timestamp* t);
-void _softReset();
+void _softReset(bool allBits);
 void _handleError();
 void _getRxTimestamp(Timestamp* t);
 void _getTxTimestamp(Timestamp* t);
@@ -47,14 +47,22 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	DW_getAddr();
 	delay(100);
 
-	_softReset();
+	_softReset(true);
 
 	long settings = CONFIG_SETTINGS;
 	if (timeout > 0) {
+		ts_puts("timeout\r\n");
 		_writeRegister(TO_ADDR, false, 0, (byte*)&timeout, 2);
 		settings |= 1L << TO_ENABLE_BIT;
+	} else {
+		ts_puts("no timeout\r\n");	
 	}
-	_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
+	long b = 0;
+	// Don't ask why, but this seems to not fully write at first....
+	while (b != settings) {
+		_writeRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&settings, 4);
+		_readRegister(SYS_CONFIG_ADDR, false, 0, (byte*)&b, 4);
+	}
 
 	_setInterruptMasks();
 	_setNetworkAddr(networkId, address);
@@ -182,6 +190,7 @@ void _setInterruptMasks() {
 	mask |= 1L << PREAMBLE_ERR_BIT;
 	mask |= 1L << HEADER_ERR_BIT;
 	mask |= 1L << RX_TO_BIT;
+	mask |= 1L << CLOCK_ERR_BIT;
 	_valToBytes(mask, data, 4);
 	long status = 0;
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
@@ -208,6 +217,7 @@ void _handleInterrupt() {
 		_handleError();
  	}
 	if (status & (RX_ERRS)) {
+		ts_puts("err\r\n");
 		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
@@ -228,18 +238,19 @@ void _handleInterrupt() {
 				rxCallback(&t, msgData + DATA_IND, dataLen, srcAddr);
 			}
 		} else {
+			ts_puts("bad frame\r\n");
 			printBytes((byte*)&status, 4);
 			_handleError();
 		}
 	}
-	_handleError();
 }
 
 void _handleError() {
 	long status = RX_ERRS | (1L << RX_VALID_BIT);
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-	_softReset();
+	_softReset(false);
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	ts_puts("handling\r\n");
 	printBytes((byte*)&status, 4);
 
 }
@@ -286,12 +297,16 @@ void DW_receiveMessage(Timestamp* d) {
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
 
-void _softReset() {
+void _softReset(bool allBits) {
 	byte data[4];
 	_readRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
 	data[0] = 0x01;
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
-	data[3] = 0xE0;
+	if (allBits) {
+		data[3] = 0x00;
+	} else {
+		data[3] = 0xE0;
+	}
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
 	data[0] = 0x00;
 	data[3] = 0xF0;
