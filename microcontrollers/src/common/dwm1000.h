@@ -179,4 +179,7 @@ void addTime(Timestamp* t1, Timestamp* t2);
 void timeDiff(Timestamp* t1, Timestamp* t2);
 void getTime(Timestamp* t);
 
+void DW_disableInterrupt();
+void DW_enableInterrupt();
+
 #endif

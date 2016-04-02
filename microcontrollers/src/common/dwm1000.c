@@ -51,11 +51,8 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 
 	long settings = CONFIG_SETTINGS;
 	if (timeout > 0) {
-		ts_puts("timeout\r\n");
 		_writeRegister(TO_ADDR, false, 0, (byte*)&timeout, 2);
 		settings |= 1L << TO_ENABLE_BIT;
-	} else {
-		ts_puts("no timeout\r\n");	
 	}
 	long b = 0;
 	// Don't ask why, but this seems to not fully write at first....
@@ -210,6 +207,8 @@ void _handleInterrupt() {
 		if (txCallback) {
 			Timestamp t;
 			_getTxTimestamp(&t);
+			long newStatus = 0xF0;
+			_writeRegister(STATUS_ADDR, false, 0, (byte*)&newStatus, 4);
 			txCallback(&t);
 		}
 	}
@@ -221,7 +220,6 @@ void _handleInterrupt() {
 		_handleError();
  	}
 	if (status & (RX_ERRS)) {
-		ts_puts("err\r\n");
 		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
@@ -242,7 +240,6 @@ void _handleInterrupt() {
 				rxCallback(&t, msgData + DATA_IND, dataLen, srcAddr);
 			}
 		} else {
-			ts_puts("bad frame\r\n");
 			printBytes((byte*)&status, 4);
 			_handleError();
 		}
@@ -254,7 +251,6 @@ void _handleError() {
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	_softReset(false);
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-	ts_puts("handling\r\n");
 	printBytes((byte*)&status, 4);
 
 }
@@ -291,12 +287,15 @@ void _sendMessage(byte* data, int len, int destination, int network, Timestamp* 
 void DW_receiveMessage(Timestamp* d) {
 	msgLen = 0;
 	long control = 0;
-
+	long status;
+	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+	printBytes((byte*)&status, 4);
 	if (d) {
 		control |= 1L << RX_DELAY_BIT;
 		d->time &= 0x000000FFFFFFFE00;
 		_writeRegister(DELAY_ADDR, false, 0, (byte*)&(d->time), 5);	
 	}
+
 	control |= 1L << RX_START_BIT;
 	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
 }
@@ -433,4 +432,15 @@ void addTime(Timestamp* t1, Timestamp* t2) {
 // Returns t1-t2 in t1
 void timeDiff(Timestamp* t1, Timestamp* t2) {
 	t1->time -= t2->time;
+	if (t1->time < 0) {
+		t1->time += 0x10000000000;
+	}
+}
+
+void DW_disableInterrupt() {
+	detachInterrupt(_irq);
+}
+
+void DW_enableInterrupt() {
+	attachInterrupt(_irq, _handleInterrupt, RISING);	
 }
