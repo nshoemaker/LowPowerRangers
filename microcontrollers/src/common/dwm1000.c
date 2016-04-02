@@ -191,9 +191,12 @@ void _setInterruptMasks() {
 void _handleInterrupt() {
 	long status;
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
+
+	ts_puts("interrupt\r\n");
 	printBytes((byte*)&status, 4);
 	// TX_DONE
 	if (status & (1L << TX_DONE_BIT)) {
+		ts_puts("tx\r\n");
 		if (txCallback) {
 			Timestamp t;
 			_getTxTimestamp(&t);
@@ -208,11 +211,13 @@ void _handleInterrupt() {
 		_handleError();
  	}
 	if (status & (RX_ERRS)) {
+		ts_puts("rx error\r\n");
 		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
 	}
 	if (status & (1L << RX_DONE_BIT)) {
+		ts_puts("rx done\r\n");
 		if (status & (1L << RX_VALID_BIT)) {
 			_readRegister(RX_INFO_ADDR, true, RX_LEN_SUB, &msgLen, 1);
 			msgLen &= 0x7f;
@@ -275,6 +280,7 @@ void _sendMessage(byte* data, int len, int destination, int network, Timestamp* 
 void DW_receiveMessage(Timestamp* d) {
 	msgLen = 0;
 	long control = 0;
+
 	if (d) {
 		control |= 1L << RX_DELAY_BIT;
 		d->time &= 0x000000FFFFFFFE00;

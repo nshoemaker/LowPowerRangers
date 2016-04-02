@@ -140,6 +140,9 @@ struct Timestamp {
 #define SOURCE_IND 7
 #define DATA_IND 9
 
+// Misc
+#define TO_ENABLE_BIT 28
+
 // Timestamp Stuff
 #define US_TO_TIMESTAMP 63897.6
 
