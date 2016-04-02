@@ -104,15 +104,16 @@ ifndef NO_ARDUINO
 	EXTRAINCDIRS += $(ARDDIR)/hardware/attiny/variants/tiny8
 	endif
 	# add Arduino sources and include directories to PSRC and EXTRAINCDIRS
-	PSRC += $(ARDCOREDIR)/HardwareSerial.cpp
-	PSRC += $(ARDCOREDIR)/new.cpp
-	PSRC += $(ARDCOREDIR)/Print.cpp
-	PSRC += $(ARDCOREDIR)/WString.cpp
+	#PSRC += $(ARDCOREDIR)/HardwareSerial.cpp
+	#PSRC += $(ARDCOREDIR)/new.cpp
+	#PSRC += $(ARDCOREDIR)/Print.cpp
+	#PSRC += $(ARDCOREDIR)/WString.cpp
 	SRC += $(ARDCOREDIR)/wiring_digital.c
 	SRC += $(ARDCOREDIR)/wiring.c
 	SRC += $(ARDCOREDIR)/WInterrupts.c
 	PSRC += $(wildcard ../common/*.cpp)
 	SRC += $(wildcard ../common/*.c)
+	ASRC = $(wildcard ../common/*.S)
 	EXTRAINCDIRS += $(ARDCOREDIR)
 	PSRC += $(foreach lib,$(ARDLIBS),$(ARDLIBDIR)/$(lib)/$(lib).cpp)
 	EXTRAINCDIRS += $(foreach lib,$(ARDLIBS),$(ARDLIBDIR)/$(lib))
@@ -136,7 +137,7 @@ FORMAT = ihex
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
+
 
 # Optional compiler flags.
 #  -g:        generate debugging information (for GDB, or for COFF conversion)
@@ -166,7 +167,7 @@ ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 #  -Wl,...:   tell GCC to pass this to linker.
 #  -Map:      create map file
 #  --cref:    add cross reference to  map file
-LDFLAGS += -Wl
+LDFLAGS += -Wl -Os
 
 
 

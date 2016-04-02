@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <HardwareSerial.h>
+#include "tinyserial.h"
 
 #include "dwm1000.h"
 
@@ -10,25 +10,31 @@
 
 bool receiving = false;
 
+void printInt(unsigned int n) {
+	char tmp[5];
+	sprintf(tmp, "%u", n);
+	ts_puts(tmp);
+}
+
 void rxFailCallback() {
 	receiving = false;
-	Serial.println("Bad Message!!!");
+	ts_puts("Bad Message!!!\r\n");
 }
 
 void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
 	receiving = false;
 	int count = *((int*)data);
-	Serial.print(srcAddr);
-	Serial.print(" sent ");
-	Serial.print(count);
-	Serial.print(" at: ");
+	printInt(srcAddr);
+	ts_puts(" sent ");
+	printInt(count);
+	ts_puts(" at: ");
 	printTime(t);
 }
 
 int main(void)
 {
    init();
-   Serial.begin(9600);
+   ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
    DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR);
    DW_setReceivedCallback(&rxCallback);
    DW_setReceiveFailedCallback(&rxFailCallback);
@@ -37,7 +43,7 @@ int main(void)
       	receiving = true;
       	DW_receiveMessage();
       }
-      delay(500);
+      delay(5);
    }
    return 0;
 }

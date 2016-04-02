@@ -58,6 +58,12 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_setChannel();
 	_setTransmitPower();
 	_setWeirdRegisters();
+
+	long control = 0;
+	control |= 1L << CANCEL_BIT;
+	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+	long d = OTP_CTRL;
+	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
 }
 
 void DW_getDevID(byte* devId) {
@@ -205,17 +211,18 @@ void _handleInterrupt() {
 			_handleError();
 		}
 	}
+	//if (rxFailCallback) {
+	//	rxFailCallback();
+	//}
 }
 
 void _handleError() {
-	_softReset();
 	long status = RX_ERRS | (1L << RX_VALID_BIT);
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-	if (rxFailCallback) {
-		rxFailCallback();
-	}
+	_softReset();
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	printBytes((byte*)&status, 4);
+
 }
 
 void DW_sendBroadcast(byte* data, int len, Timestamp* t) {
@@ -257,16 +264,13 @@ void DW_receiveMessage() {
 void _softReset() {
 	byte data[4];
 	_readRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+	data[0] = 0x01;
+	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
 	data[3] = 0xE0;
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
+	data[0] = 0x00;
 	data[3] = 0xF0;
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, data, 4);
-
-	long control = 0;
-	control |= 1L << CANCEL_BIT;
-	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
-	long d = OTP_CTRL;
-	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
 }
 
 int _makeHeader(byte RW, byte addr, bool isOffset, unsigned int offset, byte* header) {
@@ -338,9 +342,9 @@ void printBytes(byte* data, int n) {
 	char tmp[3];
 	for (int i = n - 1; i >= 0; --i) {
       	sprintf(tmp, "%.2X", data[i]);
-      	//Serial.print(tmp);
+      	ts_puts(tmp);
       }
-      //Serial.println();
+      ts_puts("\r\n");
 }
 
 void _reverseBytes(byte* b, int len) {
@@ -366,12 +370,16 @@ void DW_setReceiveFailedCallback(void (*cb)(void)) {
 
 void printTime(Timestamp* t) {
 	long temp = t->time / US_TO_TIMESTAMP;
-	//Serial.println(temp);
+	char tmp[8];
+	sprintf(tmp, "%ld", temp);
+	ts_puts(tmp);
+	ts_puts("\r\n");
 }
 
-void setTime(Timestamp* t, long us) {
-	t->time = (long long int) (us * US_TO_TIMESTAMP);
-}
+/*void setTime(Timestamp* t, long us) {
+	t->time = (long long int) (us) * TEN_US_TO_TIMESTAMP;
+	t->time /= 10;
+}*/
 
 void addTime(Timestamp* t1, Timestamp* t2) {
 	t1->time += t2->time;

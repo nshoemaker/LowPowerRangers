@@ -1,7 +1,7 @@
 #ifndef DWM1000_H
 #define DWM1000_H
 
-//#include <HardwareSerial.h>
+#include "tinyserial.h"
 #include <SPI.h>
 
 struct Timestamp {
@@ -105,7 +105,7 @@ struct Timestamp {
 #define RX_START_BIT 8
 
 // Configuration
-#define CONFIG_SETTINGS 0b00000000000000000001011111111101L
+#define CONFIG_SETTINGS 0b00100000000000000001011111111101L
 #define TX_SETTINGS 0b00000000000101101100000000000000L
 #define IFS_DELAY 0b00000000
 #define ANT_DELAY 16384
@@ -162,7 +162,7 @@ void DW_setReceiveFailedCallback(void (*cb)(void));
 
 // Timestamp functions
 void printTime(Timestamp* t);
-void setTime(Timestamp* t, long us);
+//void setTime(Timestamp* t, long us);
 void addTime(Timestamp* t1, Timestamp* t2);
 // Returns t1-t2 in t1
 void timeDiff(Timestamp* t1, Timestamp* t2);
