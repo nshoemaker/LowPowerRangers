@@ -59,11 +59,19 @@ void DW_init(int selectPin, int irq, int networkId, int address) {
 	_setTransmitPower();
 	_setWeirdRegisters();
 
-	long control = 0;
+	/*long control = 0;
 	control |= 1L << CANCEL_BIT;
-	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+	_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);*/
+	byte p[2];
+	p[0] = 0x01;
+	p[1] = 0x03;
+	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, p, 2);
 	long d = OTP_CTRL;
 	_writeRegister(OTP_ADDR, true, OTP_CTRL_SUB, (byte*)&d, 2);
+	delay(10);
+	p[0] = 0x00;
+	p[1] = 0x02;
+	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, p, 2);
 }
 
 void DW_getDevID(byte* devId) {
