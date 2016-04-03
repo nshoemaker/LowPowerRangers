@@ -1,19 +1,27 @@
 package com.example.shashwatsrivastava.androidapp549;
 
+import android.databinding.DataBindingUtil;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private ArrayList<Tag> tags = new ArrayList<>();
     private HashSet<String> tagIDsSeen = new HashSet<>();
+    private static final String TAG = "Tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +49,19 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             return;
         }
         try{
+            // Add the new Tag
             Tag newTag = new Tag(tagId, tagName);
             tags.add(newTag);
             tagIDsSeen.add(tagId);
+
+            // Add new Tag to the layout
+
+            ViewGroup viewGroup = (ViewGroup) this.findViewById(android.R.id.content);
+            LayoutInflater layoutInflater = LayoutInflater.from(this);
+            TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
+                    viewGroup, true);
+            binding.setTag(newTag);
+
         } catch(Exception e) {
             e.printStackTrace();
         }
