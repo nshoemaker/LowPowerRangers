@@ -220,7 +220,6 @@ void _handleInterrupt() {
 		_handleError();
  	}
 	if (status & (RX_ERRS)) {
-		printBytes((byte*)&status, 4);
 		_handleError();
 		return;
 	}
@@ -240,7 +239,6 @@ void _handleInterrupt() {
 				rxCallback(&t, msgData + DATA_IND, dataLen, srcAddr);
 			}
 		} else {
-			printBytes((byte*)&status, 4);
 			_handleError();
 		}
 	}
@@ -251,7 +249,6 @@ void _handleError() {
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 	_softReset(false);
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-	printBytes((byte*)&status, 4);
 
 }
 
@@ -287,9 +284,6 @@ void _sendMessage(byte* data, int len, int destination, int network, Timestamp* 
 void DW_receiveMessage(Timestamp* d) {
 	msgLen = 0;
 	long control = 0;
-	long status;
-	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
-	printBytes((byte*)&status, 4);
 	if (d) {
 		control |= 1L << RX_DELAY_BIT;
 		d->time &= 0x000000FFFFFFFE00;
