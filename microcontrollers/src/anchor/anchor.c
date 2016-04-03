@@ -61,12 +61,12 @@ void handleFinal(AnchorState* a, Timestamp* t, byte* data) {
 }
 
 void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
-	ts_puts("Got Message\r\n");
+	//ts_puts("Got Message\r\n");
 	if (data[MSG_TYPE_IND] == POLL_MSG) {
-		ts_puts("Got poll\r\n");
+		//ts_puts("Got poll\r\n");
 		handlePoll(&state, srcAddr, t);
 	} else if (data[MSG_TYPE_IND] == FINAL_MSG && state.stage == FINAL) {
-		ts_puts("Got final\r\n");
+		//ts_puts("Got final\r\n");
 		handleFinal(&state, t, data);
 	} else {
 		state.stageStarted = false;
@@ -74,7 +74,7 @@ void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
 }
 
 void txCallback(Timestamp* t) {
-	ts_puts("Sent resp\r\n");
+	//ts_puts("Sent resp\r\n");
 	handleRespSent(&state, t);
 }
 
@@ -89,13 +89,13 @@ int main(void) {
    		DW_disableInterrupt();
 		if (state.stage == POLL) {
 			if(!state.stageStarted) {
-				ts_puts("Wait for poll\r\n");
+				//ts_puts("Wait for poll\r\n");
 				state.stageStarted = true;
 				DW_receiveMessage(NULL);
 			}
 		} else if (state.stage == RESP) {
 			if(!state.stageStarted) {
-				ts_puts("Sending resp\r\n");
+				//ts_puts("Sending resp\r\n");
 				state.stageStarted = true;
 				Timestamp t;
 				t.time = T_REPLY_1_GOAL;
@@ -105,7 +105,7 @@ int main(void) {
 			}
 		} else { // state.stage == FINAL
 			if(!state.stageStarted) {
-				ts_puts("Wait for final\r\n");
+				//ts_puts("Wait for final\r\n");
 				state.stageStarted = true;
 				DW_receiveMessage(NULL);
 			}
