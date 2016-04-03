@@ -1,52 +1,52 @@
 package com.example.shashwatsrivastava.androidapp549;
 
+import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
+    private ArrayList<Tag> tags = new ArrayList<>();
+    private HashSet<String> tagIDsSeen = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Setup FAB
+        FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);
+        addItemFab.setImageResource(R.drawable.ic_add_white_24dp);
+        addItemFab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                DialogFragment dialogFragment = new AddTagDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "AddTag");
             }
         });
+
+
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void onPositiveClick(String tagId, String tagName) {
+        if(tagIDsSeen.contains(tagId)){
+            Toast.makeText(this, R.string.tagID_already_seen, Toast.LENGTH_LONG).show();
+            return;
+        }
+        try{
+            Tag newTag = new Tag(tagId, tagName);
+            tags.add(newTag);
+            tagIDsSeen.add(tagId);
+        } catch(Exception e) {
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
     }
 }
