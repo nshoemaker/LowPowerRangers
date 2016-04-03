@@ -1,11 +1,14 @@
 package com.example.shashwatsrivastava.androidapp549;
 
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,8 +52,17 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             return;
         }
         try{
+            // Value of one dp in pixels
+            Resources r = getResources();
+            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, r.getDisplayMetrics());
+
+            // Get dimensions in dp to display tags in correct places
+            DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
+            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+
             // Add the new Tag
-            Tag newTag = new Tag(tagId, tagName);
+            Tag newTag = new Tag(tagId, tagName, px, dpHeight, dpWidth);
             tags.add(newTag);
             tagIDsSeen.add(tagId);
 

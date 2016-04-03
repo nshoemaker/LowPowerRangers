@@ -16,7 +16,7 @@
             android:layout_width="100dp"
             android:layout_height="50dp"
             android:text="@{tag.tagName}"
-            android:layout_gravity="center_horizontal"/>
+            android:gravity="center_horizontal"/>
 
         <View android:layout_width="50dp"
             android:layout_height="50dp"

@@ -2,6 +2,7 @@ package com.example.shashwatsrivastava.androidapp549;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
 import android.util.Log;
 
@@ -27,8 +28,11 @@ public class Tag extends BaseObservable {
     private int tagID;
     private static final String TAG = "TagInTag";
     private String tagName;
-    public ObservableInt translationX;
-    public ObservableInt translationY;
+    public ObservableFloat translationX;
+    public ObservableFloat translationY;
+    private float dpToPx;
+    private float dpHeight;
+    private float dpWidth;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String reponseString;
@@ -36,6 +40,9 @@ public class Tag extends BaseObservable {
     private double R;
     // TODO: Add some kind of error checking if Tag doesnt exist
     private boolean errorSeen = false;
+    // Assuming size of room is 8m
+    private final int roomWidth = 8;
+    private final int roomHeight = 8;
 
     private Callback customCallback = new Callback() {
             @Override
@@ -51,6 +58,7 @@ public class Tag extends BaseObservable {
                         JSONObject jsonObject = new JSONObject(reponseString);
                         theta = jsonObject.getDouble("theta");
                         R = jsonObject.getDouble("R");
+                        setNewTagPosition();
                     } catch(JSONException e){
                         Log.d(TAG, "Error in JSON");
                         e.printStackTrace();
@@ -59,11 +67,25 @@ public class Tag extends BaseObservable {
             }
         };
 
-    public Tag(String tagID, String tagName) throws IOException, TagErrorException {
+    /**
+     * This method uses the values of R and theta to
+     * calculate the new position for the tag dot
+     */
+    private void setNewTagPosition() {
+        float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx);
+        float deltaY = (float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx);
+        translationX.set(deltaX);
+        translationY.set(deltaY);
+    }
+
+    public Tag(String tagID, String tagName, float px, float dpHeight, float dpWidth) throws IOException, TagErrorException {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
-        this.translationX = new ObservableInt(100);
-        this.translationY = new ObservableInt(400);
+        this.dpToPx = px;
+        this.dpHeight = dpHeight;
+        this.dpWidth = dpWidth;
+        this.translationX = new ObservableFloat(dpWidth/2 * px);
+        this.translationY = new ObservableFloat(dpHeight/2 * px);
         this.url = this.url + tagID;
         makeGetRequest(customCallback);
 
@@ -86,6 +108,7 @@ public class Tag extends BaseObservable {
         return call;
     }
 
+    // TODO: Use this to signal errors when tag isnt found
     public class TagErrorException extends Exception {
         public TagErrorException(){
             super();
@@ -108,10 +131,10 @@ public class Tag extends BaseObservable {
         public void run() {
             try{
                 makeGetRequest(customCallback);
-                tag.translationX.set(tag.translationX.get() + 10);
-                tag.translationY.set(tag.translationY.get() + 5);
-                Log.d(TAG, Integer.toString(translationX.get()));
-                Log.d(TAG, Integer.toString(translationY.get()));
+//                tag.translationX.set(tag.translationX.get() + 10);
+//                tag.translationY.set(tag.translationY.get() + 5);
+                Log.d(TAG, Float.toString(tag.translationX.get()));
+                Log.d(TAG, Float.toString(tag.translationY.get()));
             } catch(Exception e){
                 e.printStackTrace();
             }
