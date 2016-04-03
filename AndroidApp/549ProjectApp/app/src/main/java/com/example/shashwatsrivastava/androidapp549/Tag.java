@@ -23,6 +23,8 @@ import okhttp3.Response;
 
 /**
  * Created by shashwatsrivastava on 4/1/16.
+ *
+ * Tag class which controls all the Tag functions
  */
 public class Tag extends BaseObservable {
     private int tagID;
@@ -33,6 +35,10 @@ public class Tag extends BaseObservable {
     private float dpToPx;
     private float dpHeight;
     private float dpWidth;
+    // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
+    // than tag center
+    private int tagViewHeight = 50;
+    private int tagViewWidth = 100;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String reponseString;
@@ -72,8 +78,8 @@ public class Tag extends BaseObservable {
      * calculate the new position for the tag dot
      */
     private void setNewTagPosition() {
-        float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx);
-        float deltaY = (float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx);
+        float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx) - tagViewWidth;
+        float deltaY = Math.abs((float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx) - tagViewHeight);
         translationX.set(deltaX);
         translationY.set(deltaY);
     }
@@ -84,8 +90,8 @@ public class Tag extends BaseObservable {
         this.dpToPx = px;
         this.dpHeight = dpHeight;
         this.dpWidth = dpWidth;
-        this.translationX = new ObservableFloat(dpWidth/2 * px);
-        this.translationY = new ObservableFloat(dpHeight/2 * px);
+        this.translationX = new ObservableFloat(dpWidth/2 * px - tagViewWidth);
+        this.translationY = new ObservableFloat(dpHeight/2 * px - tagViewHeight);
         this.url = this.url + tagID;
         makeGetRequest(customCallback);
 
