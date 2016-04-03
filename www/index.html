@@ -301,7 +301,7 @@
 							</section>
 
 							<!-- Interaction Diagrams -->
-							<section id="arch">
+							<section id="interaction_diagrams">
 								<div class="container">
 									<h3>Interaction Diagrams</h3>
 									<div class="inline_block">
@@ -382,7 +382,43 @@
 										<article>
 											<div>						
 												<ul class="feature-icons">
-													<li class="fa-hourglass-2">
+													<li class="fa-android">
+														<h3>4/4/2016</h3>
+													</li>
+												</ul>
+												<h4>Two-Way Ranging, Android App, and a New Board Layout</h4>
+
+												<a href="images/04.03.16EagleLayout.JPG" class="image"><img src="images/04.03.16EagleLayout.JPG" alt="" /></a>
+												<div class="inner">
+													<p>This week we revised our board layout, implemented a two-way ranging protocol using the DWM1000s, and created an example demo Android application.</p>
+													<p>We also updated the website for the second checkpoint and added the <a href="#use_cases" target="_blabk">Use Cases</a>, <a href="#interaction_diagrams" target="_blank">Interaction Diagrams</a>, and <a href="#arch" target="_blank">Architecture</a> sections to the <a href="#docs" target="_blank">Documentation</a> part of our website (above).</p>
+												</div>
+												<p></p>
+												<h5>Second Iteration of Board Layout</h5>
+												<p>We found a voltage regulator with a bigger footprint than our original choice. We should have no problem soldering this new one.</p>
+												<p>Instead of using a through-hole Atmega328, we decided we would use the surface mount TQFP version. This allowed our board to be smaller and more compact. However, our original plan was to program the chips off-board because of the 5V nature of our AVR programmer and the 3V nature of the DWM1000s (both would need to be connected via SPI and it would be hard to separate them). However, adding a surface mount chip meant we would need to program on-board, and therefore need to add the 6-pin AVR headers, and find a way to not fry the DWMs. We found out that there was a setting in the AVR programmer that allowed it to match the power level of the circuit it was programming when it is not the power source, so we were all set. </p>
+												<p>After all of that research we decided that because we technically don't need to be able to program the chip once it is on our PCB, we didn't want to expose the programming headers and have them take up more room on the board. Luckily, we found this <a href="https://www.adafruit.com/products/1240" target="_blank">TQFP Breakout Socket from Adafruit</a> which should allow us to program our surface mount chips away from our PCBs.</p>
+												<h5>Two Way Ranging</h5>
+												<p>After a lot of hard work we finally implemented a two-way ranging protocol using the DWM1000s. Here we have the specific roles of Tag and Anchor defined and they are able to determine the range between the two through the passage of three messages. This was an exercise in starting the protocol off, getting us closer to the final ranging protocol we decided on, descriped in the <a href="#interaction_diagrams" target="_blank">Interaction Diagrams</a> section above. 
+												</p>
+												<p>Here is a diagram describing the initial protocol we implemented:</p>
+												<img src="images/twr.JPG" class="smallwidth">
+												<p></p>
+												<h5>Android App</h5>
+												<p>This week we created an Android App implementing the <a href="https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/AppIdea.md" target="_blank">app idea</a> we described last week. We chose to create an Android app mostly because our team member in charge of this portion is in an Android development class and is interested in getting as much experience as possible.</p>
+
+												<p>Deliverables for the week:</p>
+												<ul>
+													<li>Eagle schematic and layout <a href="https://github.com/nshoemaker/LowPowerRangehttps://github.com/nshoemaker/LowPowerRangers/commit/ab6a6c55503b27bf2e2fcd036c1b6661396dc728" target="_blank">(files)</a></li>
+													<li>Two Way Ranging <a href="https://github.com/nshoemaker/LowPowerRangers/commit/a6d29bc90b42aeca31870191fad3fa9a78b430c7" target="_blank">(code)</a></li>
+													<li>Android App <a href="TODO" target="_blank">(link)</a></li>
+												</ul>
+											</div>
+										</article>
+										<article>
+											<div>						
+												<ul class="feature-icons">
+													<li class="fa-spinner">
 														<h3>3/28/2016</h3>
 													</li>
 												</ul>
