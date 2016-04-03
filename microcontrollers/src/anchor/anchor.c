@@ -51,13 +51,16 @@ void handleFinal(AnchorState* a, Timestamp* t, byte* data) {
 	readTimestamp(data, T_ROUND_1_OFFSET, &tRound1);
 	readTimestamp(data, T_REPLY_2_OFFSET, &tReply2);
 	
-	printBytes((byte*)&(tRound1.time), 5);
+	/*printBytes((byte*)&(tRound1.time), 5);
 	printBytes((byte*)&(a->respTX.time), 5);
 	printBytes((byte*)&(tReply2.time), 5);
-	printBytes((byte*)&(t->time), 5);
+	printBytes((byte*)&(t->time), 5);*/
 
 	a->pollRx.time = (tRound1.time*t->time - a->respTX.time*tReply2.time) / (tRound1.time + t->time + a->respTX.time + tReply2.time);
-	printBytes((byte*)&a->pollRx.time, 5);
+	int dist = a->pollRx.time / (US_TO_TIMESTAMP / 29979);
+	printInt(dist);
+	ts_puts("\r\n");
+	//printBytes((byte*)&a->pollRx.time, 5);
 }
 
 void rxCallback(Timestamp* t, byte* data, int len, int srcAddr) {
