@@ -6,7 +6,7 @@ from testServer.models import *
 def calcDistanceAndTheta(B, r1, r2, old_distance, old_theta):
 	try:
 		distance = math.sqrt(0.5 * (r1**2) - 0.25 * (B**2) + 0.5 * (r2**2))
-		theta = ((math.acos((distance ** 2 + (B/2)**2 - r1**2) / (distance * B))) - math.pi / 2.0) * (180 / math.pi)
+		theta = ((math.acos((distance ** 2 + (B / 2)**2 - r1**2) / (distance * B))) - math.pi / 2.0) 
 		return (distance, theta)
 	except ValueError:
 		return (old_distance, old_theta)
