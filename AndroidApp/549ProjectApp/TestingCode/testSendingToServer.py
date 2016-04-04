@@ -29,7 +29,7 @@ def runTest2():
         time.sleep(1)
 
 def main():
-    #runTest1()
+    runTest1()
     runTest2()
 
 main()
