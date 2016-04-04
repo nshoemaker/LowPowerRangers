@@ -16,10 +16,8 @@ import android.widget.Toast;
 
 import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private ArrayList<Tag> tags = new ArrayList<>();

@@ -6,8 +6,6 @@ import android.databinding.ObservableFloat;
 import android.databinding.ObservableInt;
 import android.util.Log;
 
-import com.example.shashwatsrivastava.androidapp549.BR;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
