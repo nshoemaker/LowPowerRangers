@@ -2,6 +2,8 @@ package com.example.shashwatsrivastava.androidapp549;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.ObservableFloat;
+import android.databinding.ObservableInt;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -19,18 +21,32 @@ import okhttp3.Response;
 
 /**
  * Created by shashwatsrivastava on 4/1/16.
+ *
+ * Tag class which controls all the Tag functions
  */
 public class Tag extends BaseObservable {
     private int tagID;
-    private static final String TAG = "Tag";
+    private static final String TAG = "TagInTag";
     private String tagName;
-    private String paddingLeft;
+    public ObservableFloat translationX;
+    public ObservableFloat translationY;
+    private float dpToPx;
+    private float dpHeight;
+    private float dpWidth;
+    // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
+    // than tag center
+    private int tagViewHeight = 50;
+    private int tagViewWidth = 100;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String reponseString;
     private double theta;
     private double R;
+    // TODO: Add some kind of error checking if Tag doesnt exist
     private boolean errorSeen = false;
+    // Assuming size of room is 8m
+    private final int roomWidth = 8;
+    private final int roomHeight = 8;
 
     private Callback customCallback = new Callback() {
             @Override
@@ -42,11 +58,11 @@ public class Tag extends BaseObservable {
             public void onResponse(Call call, Response response) throws IOException {
                 if(response.isSuccessful()){
                     reponseString = response.body().string();
-                    Log.d(TAG, reponseString);
                     try{
                         JSONObject jsonObject = new JSONObject(reponseString);
                         theta = jsonObject.getDouble("theta");
                         R = jsonObject.getDouble("R");
+                        setNewTagPosition();
                     } catch(JSONException e){
                         Log.d(TAG, "Error in JSON");
                         e.printStackTrace();
@@ -55,25 +71,35 @@ public class Tag extends BaseObservable {
             }
         };
 
-    public Tag(String tagID, String tagName) throws IOException, TagErrorException {
+    /**
+     * This method uses the values of R and theta to
+     * calculate the new position for the tag dot
+     */
+    private void setNewTagPosition() {
+        float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx) - tagViewWidth;
+        float deltaY = Math.abs((float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx));
+        translationX.set(deltaX);
+        translationY.set(deltaY);
+    }
+
+    public Tag(String tagID, String tagName, float px, float dpHeight, float dpWidth) throws IOException, TagErrorException {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
-        this.paddingLeft = "30dp";
+        this.dpToPx = px;
+        this.dpHeight = dpHeight;
+        this.dpWidth = dpWidth;
+        this.translationX = new ObservableFloat(dpWidth/2 * px - tagViewWidth);
+        this.translationY = new ObservableFloat(dpHeight/2 * px - tagViewHeight);
         this.url = this.url + tagID;
-        Call reply = makeGetRequest(customCallback);
+        makeGetRequest(customCallback);
 
         Timer timer = new Timer();
-        timer.schedule(new UpdateTagValues(), 0, 1000);
+        timer.schedule(new UpdateTagValues(this), 0, 300);
     }
 
     @Bindable
     public String getTagName(){
         return this.tagName;
-    }
-
-    @Bindable
-    public String getPaddingLeft(){
-        return this.paddingLeft;
     }
 
     private Call makeGetRequest(Callback callback) throws IOException {
@@ -86,6 +112,7 @@ public class Tag extends BaseObservable {
         return call;
     }
 
+    // TODO: Use this to signal errors when tag isnt found
     public class TagErrorException extends Exception {
         public TagErrorException(){
             super();
@@ -97,11 +124,21 @@ public class Tag extends BaseObservable {
     }
 
     private class UpdateTagValues extends TimerTask {
+        private Tag tag;
+        private static final String TAG = "UpdateValueTag";
+
+        public UpdateTagValues(Tag tag){
+            this.tag = tag;
+        }
 
         @Override
         public void run() {
             try{
                 makeGetRequest(customCallback);
+//                tag.translationX.set(tag.translationX.get() + 10);
+//                tag.translationY.set(tag.translationY.get() + 5);
+                Log.d(TAG, Float.toString(tag.translationX.get()));
+                Log.d(TAG, Float.toString(tag.translationY.get()));
             } catch(Exception e){
                 e.printStackTrace();
             }
