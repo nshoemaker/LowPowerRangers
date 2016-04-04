@@ -79,7 +79,7 @@ public class Tag extends BaseObservable {
      */
     private void setNewTagPosition() {
         float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx) - tagViewWidth;
-        float deltaY = Math.abs((float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx) - tagViewHeight);
+        float deltaY = Math.abs((float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx));
         translationX.set(deltaX);
         translationY.set(deltaY);
     }
@@ -96,7 +96,7 @@ public class Tag extends BaseObservable {
         makeGetRequest(customCallback);
 
         Timer timer = new Timer();
-        timer.schedule(new UpdateTagValues(this), 0, 1000);
+        timer.schedule(new UpdateTagValues(this), 0, 300);
     }
 
     @Bindable
