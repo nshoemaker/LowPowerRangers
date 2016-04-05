@@ -84,14 +84,14 @@ public class Tag extends BaseObservable {
         translationY.set(deltaY);
     }
 
-    public Tag(String tagID, String tagName, float px, float dpHeight, float dpWidth) {
+    public Tag(String tagID, String tagName) {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
-        this.dpToPx = px;
-        this.dpHeight = dpHeight;
-        this.dpWidth = dpWidth;
-        this.translationX = new ObservableFloat(dpWidth/2 * px - tagViewWidth);
-        this.translationY = new ObservableFloat(dpHeight/2 * px - tagViewHeight);
+        this.dpToPx = DisplayUtilities.dpToPx(1);
+        this.dpHeight = DisplayUtilities.getDpHeight();
+        this.dpWidth = DisplayUtilities.getDpWidth();
+        this.translationX = new ObservableFloat(dpWidth/2 * this.dpToPx - tagViewWidth);
+        this.translationY = new ObservableFloat(dpHeight/2 * this.dpToPx - tagViewHeight);
         this.url = this.url + tagID;
         makeGetRequest(customCallback);
 

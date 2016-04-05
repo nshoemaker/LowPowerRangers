@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             if(response.isSuccessful()) {
                 reponseString = response.body().string();
 
-
-
                 try {
                     JSONObject jsonObject = new JSONObject(reponseString);
                     jsonObject.getDouble("theta");
@@ -59,16 +57,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // Value of one dp in pixels
-                            Resources r = getResources();
-                            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, r.getDisplayMetrics());
-
-                            // Get dimensions in dp to display tags in correct places
-                            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-                            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
-
-                            Tag newTag = new Tag(tagId, tagName, px, dpHeight, dpWidth);
+                            Tag newTag = new Tag(tagId, tagName);
                             tagIDsSeen.add(tagId);
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
                             LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
