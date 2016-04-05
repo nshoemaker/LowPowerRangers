@@ -3,7 +3,6 @@ package com.example.shashwatsrivastava.androidapp549;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
-import android.databinding.ObservableInt;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -42,8 +41,6 @@ public class Tag extends BaseObservable {
     private String reponseString;
     private double theta;
     private double R;
-    // TODO: Add some kind of error checking if Tag doesnt exist
-    private boolean errorSeen = false;
     // Assuming size of room is 8m
     private final int roomWidth = 8;
     private final int roomHeight = 8;

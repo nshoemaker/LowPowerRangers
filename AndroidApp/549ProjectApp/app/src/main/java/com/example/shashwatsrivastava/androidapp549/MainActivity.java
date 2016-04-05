@@ -20,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import okhttp3.Call;
@@ -49,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 reponseString = response.body().string();
 
                 try {
+                    // Check if the tag is valid
                     JSONObject jsonObject = new JSONObject(reponseString);
                     jsonObject.getDouble("theta");
-
 
                     // Add new Tag to the layout
                     runOnUiThread(new Runnable() {
@@ -69,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                     });
 
                 } catch (JSONException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.tag_doesnt_exist, Toast.LENGTH_LONG).show();
+                        }
+                    });
                     e.printStackTrace();
                 }
             }
