@@ -18,13 +18,12 @@
         android:text="New Image" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="30dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Anchor Position"
+        android:text="    Anchor Position"
         android:id="@+id/anchor_position"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/add_item_fab"
-        android:layout_alignParentBottom="true" />
+        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
