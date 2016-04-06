@@ -7,6 +7,7 @@
 #define NETWORK_ID 0
 
 #define SELECT_PIN 10
+#define RESET_PIN 9
 #define IRQ 0
 
 typedef enum {POLL, RESP, FINAL} Stage;
@@ -60,6 +61,7 @@ void handleFinal(AnchorState* a, Timestamp* t, byte* data) {
 	int dist = a->pollRx.time / (US_TO_TIMESTAMP / 29979);
 	printInt(dist);
 	ts_puts("\r\n");
+	DW_reset();
 	//printBytes((byte*)&a->pollRx.time, 5);
 }
 
@@ -84,7 +86,7 @@ void txCallback(Timestamp* t) {
 int main(void) {
 	init();
 	ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
-	DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 0);
+	DW_init(SELECT_PIN, RESET_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 0);
 	initState(&state);
 	DW_setReceivedCallback(&rxCallback);
 	DW_setSentCallback(&txCallback);

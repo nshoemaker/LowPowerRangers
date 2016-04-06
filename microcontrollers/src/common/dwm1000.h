@@ -156,7 +156,8 @@ extern byte msgLen;
 
 void printBytes(byte* data, int n);
 
-void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout);
+void DW_init(int selectPin, int rstPin, int irq, int networkId, int address, unsigned int timeout);
+void DW_reset();
 
 void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();

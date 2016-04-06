@@ -23,15 +23,17 @@ byte msgData[MSG_LEN];
 byte msgLen = 0;
 
 int _selectPin;
+int _resetPin;
 int _networkId;
 int _addr;
+unsigned int _timeout;
 byte _irq;
 
 void (*rxFailCallback)(void) = NULL;
 void (*rxCallback)(Timestamp* t, byte* data, int len, int srcAddr) = NULL;
 void (*txCallback)(Timestamp* t) = NULL;
 
-void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout) {
+void DW_init(int selectPin, int rstPin, int irq, int networkId, int address, unsigned int timeout) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
@@ -41,17 +43,23 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	_addr = address;
 
 	_selectPin = selectPin;
+	_resetPin = rstPin;
 	attachInterrupt(irq, _handleInterrupt, RISING);
 	pinMode(selectPin, OUTPUT);
-	// First SPI interaction is always garabge, for some reason
-	DW_getAddr();
-	delay(100);
+	pinMode(_resetPin, OUTPUT);
+	_timeout = timeout;
+	DW_reset();
+}
 
-	_softReset(true);
+void DW_reset() {
+	//_softReset(true);
+	digitalWrite(_resetPin, LOW);
+	delayMicroseconds(100);
+	digitalWrite(_resetPin, HIGH);
 
 	long settings = CONFIG_SETTINGS;
-	if (timeout > 0) {
-		_writeRegister(TO_ADDR, false, 0, (byte*)&timeout, 2);
+	if (_timeout > 0) {
+		_writeRegister(TO_ADDR, false, 0, (byte*)&_timeout, 2);
 		settings |= 1L << TO_ENABLE_BIT;
 	}
 	long b = 0;
@@ -62,7 +70,7 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	}
 
 	_setInterruptMasks();
-	_setNetworkAddr(networkId, address);
+	_setNetworkAddr(_networkId, _addr);
 	_setAntennaDelays();
 	_setChannel();
 	_setTransmitPower();

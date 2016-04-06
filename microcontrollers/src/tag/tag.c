@@ -7,6 +7,7 @@
 #define NETWORK_ID 0
 
 #define SELECT_PIN 10
+#define RESET_PIN 9
 #define IRQ 0
 
 #define MSG_WAIT_TIME 0xBE6E00000
@@ -74,7 +75,7 @@ void txCallback(Timestamp* t) {
 int main(void) {
    init();
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
-   DW_init(SELECT_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 2000);
+   DW_init(SELECT_PIN, RESET_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 2000);
    initState(&state);
    DW_setReceivedCallback(&rxCallback);
    DW_setReceiveFailedCallback(&rxFailCallback);
@@ -92,6 +93,7 @@ int main(void) {
             //ts_puts("Sending poll\r\n");
             state.stageStarted = true;
             Timestamp t;
+            DW_reset();
             getTime(&t);
             addTime(&t, &msgDelay);
             byte msg_type = POLL_MSG;
