@@ -16,13 +16,69 @@ import android.widget.Toast;
 
 import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.HashSet;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
-    private ArrayList<Tag> tags = new ArrayList<>();
     private HashSet<String> tagIDsSeen = new HashSet<>();
     private static final String TAG = "Tag";
+    private String url = "https://test-server-549.herokuapp.com/testServer/get/";
+    private String tagId;
+    private String tagName;
+
+    private Callback customCallback = new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+            // Something went wrong
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+            String reponseString;
+            if(response.isSuccessful()) {
+                reponseString = response.body().string();
+
+                try {
+                    // Check if the tag is valid
+                    JSONObject jsonObject = new JSONObject(reponseString);
+                    jsonObject.getDouble("theta");
+
+                    // Add new Tag to the layout
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Tag newTag = new Tag(tagId, tagName);
+                            tagIDsSeen.add(tagId);
+                            ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
+                            LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+                            TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
+                                    viewGroup, true);
+                            binding.setTag(newTag);
+                            Log.d("ERROR", "Added the tag");
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, R.string.tag_doesnt_exist, Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,31 +106,27 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             return;
         }
         try{
-            // Value of one dp in pixels
-            Resources r = getResources();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, r.getDisplayMetrics());
 
-            // Get dimensions in dp to display tags in correct places
-            DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-            float dpHeight = displayMetrics.heightPixels / displayMetrics.density;
-            float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+            this.tagId = tagId;
+            this.tagName = tagName;
+            makeGetRequest(url + tagId, customCallback);
 
-            // Add the new Tag
-            Tag newTag = new Tag(tagId, tagName, px, dpHeight, dpWidth);
-            tags.add(newTag);
-            tagIDsSeen.add(tagId);
-
-            // Add new Tag to the layout
-
-            ViewGroup viewGroup = (ViewGroup) this.findViewById(android.R.id.content);
-            LayoutInflater layoutInflater = LayoutInflater.from(this);
-            TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
-                    viewGroup, true);
-            binding.setTag(newTag);
 
         } catch(Exception e) {
             e.printStackTrace();
         }
 
     }
+
+    private Call makeGetRequest(String url, Callback callback) throws IOException {
+        OkHttpClient client =  new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+        return call;
+    }
+
 }

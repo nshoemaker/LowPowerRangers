@@ -3,7 +3,6 @@ package com.example.shashwatsrivastava.androidapp549;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
-import android.databinding.ObservableInt;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -42,8 +41,6 @@ public class Tag extends BaseObservable {
     private String reponseString;
     private double theta;
     private double R;
-    // TODO: Add some kind of error checking if Tag doesnt exist
-    private boolean errorSeen = false;
     // Assuming size of room is 8m
     private final int roomWidth = 8;
     private final int roomHeight = 8;
@@ -55,16 +52,18 @@ public class Tag extends BaseObservable {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response)  {
                 if(response.isSuccessful()){
-                    reponseString = response.body().string();
                     try{
+                        reponseString = response.body().string();
                         JSONObject jsonObject = new JSONObject(reponseString);
                         theta = jsonObject.getDouble("theta");
                         R = jsonObject.getDouble("R");
                         setNewTagPosition();
                     } catch(JSONException e){
                         Log.d(TAG, "Error in JSON");
+                        e.printStackTrace();
+                    } catch(Exception e){
                         e.printStackTrace();
                     }
                 }
@@ -82,14 +81,14 @@ public class Tag extends BaseObservable {
         translationY.set(deltaY);
     }
 
-    public Tag(String tagID, String tagName, float px, float dpHeight, float dpWidth) throws IOException, TagErrorException {
+    public Tag(String tagID, String tagName) {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
-        this.dpToPx = px;
-        this.dpHeight = dpHeight;
-        this.dpWidth = dpWidth;
-        this.translationX = new ObservableFloat(dpWidth/2 * px - tagViewWidth);
-        this.translationY = new ObservableFloat(dpHeight/2 * px - tagViewHeight);
+        this.dpToPx = DisplayUtilities.dpToPx(1);
+        this.dpHeight = DisplayUtilities.getDpHeight();
+        this.dpWidth = DisplayUtilities.getDpWidth();
+        this.translationX = new ObservableFloat(dpWidth/2 * this.dpToPx - tagViewWidth);
+        this.translationY = new ObservableFloat(dpHeight/2 * this.dpToPx - tagViewHeight);
         this.url = this.url + tagID;
         makeGetRequest(customCallback);
 
@@ -102,7 +101,7 @@ public class Tag extends BaseObservable {
         return this.tagName;
     }
 
-    private Call makeGetRequest(Callback callback) throws IOException {
+    private Call makeGetRequest(Callback callback) {
         Request request = new Request.Builder()
                 .url(this.url)
                 .build();
@@ -110,17 +109,6 @@ public class Tag extends BaseObservable {
         Call call = client.newCall(request);
         call.enqueue(callback);
         return call;
-    }
-
-    // TODO: Use this to signal errors when tag isnt found
-    public class TagErrorException extends Exception {
-        public TagErrorException(){
-            super();
-        }
-
-        public TagErrorException(String message){
-            super(message);
-        }
     }
 
     private class UpdateTagValues extends TimerTask {
