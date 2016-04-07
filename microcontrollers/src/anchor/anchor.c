@@ -44,6 +44,8 @@ void handleFinal(AnchorState* a, Timestamp* t, byte* data) {
 	a->stage = POLL;
 	a->stageStarted = false;
 	
+	//printTime(&(a->respTX));
+	//printTime(&(a->pollRx));
 	// Put T_round2 in t
 	timeDiff(t, &(a->respTX));
 	// Put T_reply1 in respTx
@@ -83,6 +85,11 @@ void txCallback(Timestamp* t) {
 	handleRespSent(&state, t);
 }
 
+void failCallback() {
+	state.stage = POLL;
+	state.stageStarted = false;
+}
+
 int main(void) {
 	init();
 	ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
@@ -90,6 +97,7 @@ int main(void) {
 	initState(&state);
 	DW_setReceivedCallback(&rxCallback);
 	DW_setSentCallback(&txCallback);
+	DW_setGeneralFailCallback(&failCallback);
    	while (1) {
    		DW_disableInterrupt();
 		if (state.stage == POLL) {

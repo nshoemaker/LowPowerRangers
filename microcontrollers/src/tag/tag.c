@@ -72,14 +72,20 @@ void txCallback(Timestamp* t) {
    }
 }
 
+void failCallback() {
+   startOver(&state);
+}
+
 int main(void) {
    init();
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
+   ts_puts("Hello\r\n");
    DW_init(SELECT_PIN, RESET_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 2000);
    initState(&state);
    DW_setReceivedCallback(&rxCallback);
    DW_setReceiveFailedCallback(&rxFailCallback);
    DW_setSentCallback(&txCallback);
+   DW_setGeneralFailCallback(&failCallback);
    Timestamp msgDelay;
    msgDelay.time = MSG_WAIT_TIME;
    Timestamp respDelay;

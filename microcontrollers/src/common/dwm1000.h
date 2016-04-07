@@ -95,6 +95,7 @@ struct Timestamp {
 #define CLOCK_ERR_BIT 25
 #define PREAMBLE_ERR_BIT 26
 #define HEADER_ERR_BIT 12
+#define TOO_LATE_BIT 27
 //				  3322 2222 2222 1111 1111 1100 0000 0000
 //				  1098 7654 3210 9876 5432 1098 7654 3210
 
@@ -171,6 +172,7 @@ void DW_receiveMessage(Timestamp* d);
 void DW_setSentCallback(void (*cb)(Timestamp*));
 void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int));
 void DW_setReceiveFailedCallback(void (*cb)(void));
+void DW_setGeneralFailCallback(void (*cb)(void));
 
 // Timestamp functions
 void printTime(Timestamp* t);
