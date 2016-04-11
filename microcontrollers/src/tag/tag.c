@@ -12,12 +12,13 @@
 
 #define MSG_WAIT_TIME 0xBE6E00000
 
-typedef enum {POLL, RESP, FINAL} Stage;
+typedef enum {POLL, RESP_A, RESP_B, FINAL} Stage;
 struct TagState {
    Stage stage;
    bool stageStarted;
    Timestamp pollTx;
-   Timestamp respRx;
+   Timestamp respRxA;
+   Timestamp respRxB;
 };
 
 TagState state;
@@ -28,15 +29,24 @@ void initState(TagState* a) {
 }
 
 void handlePollSent(TagState* a, Timestamp* t) {
-   a->stage = RESP;
+   a->stage = RESP_A;
    a->stageStarted = false;
    a->pollTx.time = t->time;
 }
 
 void handleResp(TagState* a, Timestamp* t) {
-   a->stage = FINAL;
+   if (a->stage == RESP_A) {
+      ts_puts("RESP_A\r\n");
+      a->stage = RESP_B;
+      a->respRxA.time = t->time;
+   } else {
+      ts_puts("RESP_B\r\n");
+      a->stage = FINAL;
+      a->respRxB.time = t->time;
+   }
+
    a->stageStarted = false;
-   a->respRx.time = t->time;
+   
 }
 
 void startOver(TagState* a) {
@@ -67,12 +77,13 @@ void txCallback(Timestamp* t) {
       //ts_puts("Sent poll\r\n");
       handlePollSent(&state, t);
    } else if (state.stage == FINAL) {
-      //ts_puts("Sent final\r\n");
+      ts_puts("Sent final\r\n");
       handleFinalSent(&state);
    }
 }
 
 void failCallback() {
+   ts_puts("LOL fail\r\n");
    startOver(&state);
 }
 
@@ -88,8 +99,6 @@ int main(void) {
    DW_setGeneralFailCallback(&failCallback);
    Timestamp msgDelay;
    msgDelay.time = MSG_WAIT_TIME;
-   Timestamp respDelay;
-   respDelay.time = RESP_DELAY;
    Timestamp finalDelay;
    finalDelay.time = T_REPLY_2_GOAL;
    while (1) {
@@ -105,31 +114,42 @@ int main(void) {
             byte msg_type = POLL_MSG;
             DW_sendBroadcast(&msg_type, 1, &t);
          }
-      } else if (state.stage == RESP) {
+      } else if (state.stage == RESP_A || state.stage == RESP_B) {
          if(!state.stageStarted) {
             //ts_puts("Wait for resp\r\n");
             state.stageStarted = true;
             Timestamp t;
-            t.time = state.pollTx.time;
-            addTime(&t, &respDelay);
+            if (state.stage == RESP_A) {
+               t.time = RESP_A_DELAY;
+            } else {
+               t.time = RESP_B_DELAY;
+            }
+            addTime(&t, &(state.pollTx));
             DW_receiveMessage(&t);
          }
       } else { // state.stage == FINAL
          if(!state.stageStarted) {
             //ts_puts("Sending final\r\n");
             state.stageStarted = true;
-            Timestamp t, t2;
-            t.time = state.respRx.time;
+            Timestamp t, tReply2A, tReply2B;
+            t.time = state.respRxB.time;
             addTime(&t, &finalDelay);
-            t2.time = t.time & 0x000000FFFFFFFE00;
-            timeDiff(&t2, &(state.respRx));
-            byte msg[11];
+            tReply2A.time = t.time & 0x000000FFFFFFFE00;
+            tReply2B.time = tReply2A.time;
+            timeDiff(&tReply2A, &(state.respRxA));
+            timeDiff(&tReply2B, &(state.respRxB));
+            byte msg[21];
             msg[0] = FINAL_MSG;
-            // Put T_round1 in respRx
-            timeDiff(&(state.respRx), &(state.pollTx));
-            writeTimestamp(msg, T_ROUND_1_OFFSET, &(state.respRx));
-            writeTimestamp(msg, T_REPLY_2_OFFSET, &(t2));
-            DW_sendBroadcast(msg, 11, &t);
+            // Put T_round1X in respRxX
+            timeDiff(&(state.respRxA), &(state.pollTx));
+            timeDiff(&(state.respRxB), &(state.pollTx));
+
+            writeTimestamp(msg, T_ROUND_1A_OFFSET, &(state.respRxA));
+            writeTimestamp(msg, T_REPLY_2A_OFFSET, &(tReply2A));
+            writeTimestamp(msg, T_ROUND_1B_OFFSET, &(state.respRxB));
+            writeTimestamp(msg, T_REPLY_2B_OFFSET, &(tReply2B));
+
+            DW_sendBroadcast(msg, 21, &t);
          }
       }
       DW_enableInterrupt();
