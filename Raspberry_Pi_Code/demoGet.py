@@ -22,11 +22,15 @@ def set_method():
     ## B = raw_input("Enter the distance between two tags")
     ## r1 = raw_input("Enter distance between anchor 1 and tag")
     ## r2 = raw_input("Enter distance between anchor 2 and tag")
-    
-    url = "https://test-server-549.herokuapp.com/testServer/set/" + str(tagID) + "/" + str(B) + "/" + str(r1) + "/" + str(r2)
-    print str(B) + "/" + str(r1) + "/" + str(r2)
-    response = urllib.urlopen(url)
-    print response.read()
+    while(1):
+        try:
+            url = "https://test-server-549.herokuapp.com/testServer/set/" + str(tagID) + "/" + str(B) + "/" + str(r1) + "/" + str(r2)
+            print str(B) + "/" + str(r1) + "/" + str(r2)
+            response = urllib.urlopen(url)
+            print response.read()
+            break
+        except:
+            pass
 
 def get_method():
     tagID = raw_input("Enter the tag ID")
