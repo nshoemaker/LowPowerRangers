@@ -3,6 +3,7 @@ import math
 from django.http import JsonResponse, HttpResponse
 from testServer.models import *
 import time
+from django.db import transaction
 
 def calcDistanceAndTheta(B, r1, r2, old_distance, old_theta):
 	try:
