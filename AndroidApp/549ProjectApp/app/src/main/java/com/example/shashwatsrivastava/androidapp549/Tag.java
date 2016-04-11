@@ -42,8 +42,8 @@ public class Tag extends BaseObservable {
     private double theta;
     private double R;
     // Assuming size of room is 8m
-    private final int roomWidth = 8;
-    private final int roomHeight = 8;
+    private final int roomWidth = 300;
+    private final int roomHeight = 800;
 
     private Callback customCallback = new Callback() {
             @Override
