@@ -7,3 +7,4 @@ class Tag(models.Model):
 	B = models.FloatField()
 	r1 = models.FloatField()
 	r2 = models.FloatField()
+	recentTimeStamp = models.FloatField()
