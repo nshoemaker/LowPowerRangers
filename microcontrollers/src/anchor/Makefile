@@ -54,6 +54,9 @@ EXTRAINCDIRS = ../common
 ifndef CHIP_ADDR
 CHIP_ADDR = 0
 endif
+ifndef ANT_DELAY
+ANT_DELAY = 0x48C0
+endif
 ifndef TARGET
 TARGET = main
 endif
@@ -85,7 +88,7 @@ endif
 ifndef F_CPU
 F_CPU = 8000000
 endif
-CFLAGS += -D F_CPU=$(F_CPU) -D CHIP_ADDR=$(CHIP_ADDR)
+CFLAGS += -D F_CPU=$(F_CPU) -D CHIP_ADDR=$(CHIP_ADDR) -D ANT_DELAY=$(ANT_DELAY) -D POS=$(POS)
 CFLAGS += -std=c99
 
 
@@ -167,7 +170,7 @@ ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 #  -Wl,...:   tell GCC to pass this to linker.
 #  -Map:      create map file
 #  --cref:    add cross reference to  map file
-LDFLAGS += -Wl -Os
+LDFLAGS += -Wl,-Os
 
 
 
@@ -343,7 +346,12 @@ extcoff: $(TARGET).elf
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) -b $(BAUDRATE)
 
+ifeq ($(POS),)
+$(info POS not set!)
+program_id:
+else
 program_id: clean program
+endif
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf

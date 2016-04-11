@@ -23,15 +23,18 @@ byte msgData[MSG_LEN];
 byte msgLen = 0;
 
 int _selectPin;
+int _resetPin;
 int _networkId;
 int _addr;
+unsigned int _timeout;
 byte _irq;
 
 void (*rxFailCallback)(void) = NULL;
+void (*generalFailCallback)(void) = NULL;
 void (*rxCallback)(Timestamp* t, byte* data, int len, int srcAddr) = NULL;
 void (*txCallback)(Timestamp* t) = NULL;
 
-void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout) {
+void DW_init(int selectPin, int rstPin, int irq, int networkId, int address, unsigned int timeout) {
 	SPI.setClockDivider(SPI_CLOCK_DIV4);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
@@ -41,17 +44,24 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	_addr = address;
 
 	_selectPin = selectPin;
+	_resetPin = rstPin;
 	attachInterrupt(irq, _handleInterrupt, RISING);
 	pinMode(selectPin, OUTPUT);
-	// First SPI interaction is always garabge, for some reason
-	DW_getAddr();
-	delay(100);
+	pinMode(_resetPin, OUTPUT);
+	_timeout = timeout;
+	DW_reset();
+}
 
-	_softReset(true);
+void DW_reset() {
+	//_softReset(true);
+	DW_disableInterrupt();
+	digitalWrite(_resetPin, LOW);
+	delay(10);
+	digitalWrite(_resetPin, HIGH);
 
 	long settings = CONFIG_SETTINGS;
-	if (timeout > 0) {
-		_writeRegister(TO_ADDR, false, 0, (byte*)&timeout, 2);
+	if (_timeout > 0) {
+		_writeRegister(TO_ADDR, false, 0, (byte*)&_timeout, 2);
 		settings |= 1L << TO_ENABLE_BIT;
 	}
 	long b = 0;
@@ -62,7 +72,7 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	}
 
 	_setInterruptMasks();
-	_setNetworkAddr(networkId, address);
+	_setNetworkAddr(_networkId, _addr);
 	_setAntennaDelays();
 	_setChannel();
 	_setTransmitPower();
@@ -81,6 +91,7 @@ void DW_init(int selectPin, int irq, int networkId, int address, unsigned int ti
 	p[0] = 0x00;
 	p[1] = 0x02;
 	_writeRegister(PWR_MGMT_ADDR, true, PWR_MGMT0_SUB, p, 2);
+	DW_enableInterrupt();
 }
 
 void getTime(Timestamp* t) {
@@ -192,6 +203,7 @@ void _setInterruptMasks() {
 	mask |= 1L << HEADER_ERR_BIT;
 	mask |= 1L << RX_TO_BIT;
 	mask |= 1L << CLOCK_ERR_BIT;
+	mask |= 1L << TOO_LATE_BIT;
 	_valToBytes(mask, data, 4);
 	long status = 0;
 	_writeRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
@@ -202,6 +214,15 @@ void _handleInterrupt() {
 	long status;
 	_readRegister(STATUS_ADDR, false, 0, (byte*)&status, 4);
 
+	// Delayed send/receive is really far away, probably an error
+	if (status & (1L << TOO_LATE_BIT)) {
+		long control = 0;
+		control |= 1L << CANCEL_BIT;
+		_writeRegister(CONTROL_ADDR, false, 0, (byte*)&control, 4);
+		if (generalFailCallback) {
+			generalFailCallback();
+		}
+	}
 	// TX_DONE
 	if (status & (1L << TX_DONE_BIT)) {
 		if (txCallback) {
@@ -343,7 +364,7 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	byte header[3];
 	int headerLen = _makeHeader(READ, addr, isOffset, offset, header);
 
-	//detachInterrupt(_irq);
+	detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -354,14 +375,14 @@ void _readRegister(byte addr, bool isOffset, unsigned int offset, byte* data, un
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	//attachInterrupt(_irq, _handleInterrupt, RISING);
+	attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, unsigned int n) {
 	byte header[3];
 	int headerLen = _makeHeader(WRITE, addr, isOffset, offset, header);
 
-	//detachInterrupt(_irq);
+	detachInterrupt(_irq);
 	SPI.begin();
 	digitalWrite(_selectPin, LOW);
 	for (int i = 0; i < headerLen; ++i) {
@@ -372,7 +393,7 @@ void _writeRegister(byte addr, bool isOffset, unsigned int offset, byte* data, u
 	}
 	digitalWrite(_selectPin, HIGH);
 	SPI.end();
-	//attachInterrupt(_irq, _handleInterrupt, RISING);
+	attachInterrupt(_irq, _handleInterrupt, RISING);
 }
 
 void printBytes(byte* data, int n) {
@@ -405,6 +426,10 @@ void DW_setReceiveFailedCallback(void (*cb)(void)) {
 	rxFailCallback = cb;
 }
 
+void DW_setGeneralFailCallback(void (*cb)(void)) {
+	generalFailCallback = cb;
+}
+
 void printTime(Timestamp* t) {
 	long temp = t->time / US_TO_TIMESTAMP;
 	char tmp[8];
@@ -420,7 +445,7 @@ void printTime(Timestamp* t) {
 
 void addTime(Timestamp* t1, Timestamp* t2) {
 	t1->time += t2->time;
-	t1->time %= 0xFFFFFFFFFF;
+	t1->time %= 0x10000000000;
 }
 
 // Returns t1-t2 in t1
