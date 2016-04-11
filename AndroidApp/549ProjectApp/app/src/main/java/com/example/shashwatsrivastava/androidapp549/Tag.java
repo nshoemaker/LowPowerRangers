@@ -34,7 +34,7 @@ public class Tag extends BaseObservable {
     private float dpWidth;
     // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
     // than tag center
-    private int tagViewHeight = 50;
+    private int tagViewHeight = 100;
     private int tagViewWidth = 100;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
@@ -75,8 +75,12 @@ public class Tag extends BaseObservable {
      * calculate the new position for the tag dot
      */
     private void setNewTagPosition() {
-        float deltaX = (float) ((this.dpWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx) - tagViewWidth;
-        float deltaY = Math.abs((float) ((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) * this.dpToPx));
+        float deltaX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta) * R * (this.dpWidth / this.roomWidth)) * this.dpToPx);
+        float deltaY = Math.abs((float) (((Math.cos(theta) * R * (this.dpHeight / this.roomHeight)) - 0.75 * tagViewHeight) * this.dpToPx));
+        Log.d(TAG, "Theta is " + theta);
+        Log.d(TAG, "R is " + R);
+        Log.d(TAG, "deltaX is " + deltaX);
+        Log.d(TAG, "deltaY is " +  deltaY);
         translationX.set(deltaX);
         translationY.set(deltaY);
     }
@@ -92,6 +96,9 @@ public class Tag extends BaseObservable {
         this.url = this.url + tagID;
         makeGetRequest(customCallback);
 
+        Log.d(TAG, "Hieght in dp is " + this.dpHeight);
+        Log.d(TAG, "Width in dp is " + this.dpWidth);
+        Log.d(TAG, "dpToPX is " + this.dpToPx);
         Timer timer = new Timer();
         timer.schedule(new UpdateTagValues(this), 0, 300);
     }
@@ -125,8 +132,8 @@ public class Tag extends BaseObservable {
                 makeGetRequest(customCallback);
 //                tag.translationX.set(tag.translationX.get() + 10);
 //                tag.translationY.set(tag.translationY.get() + 5);
-                Log.d(TAG, Float.toString(tag.translationX.get()));
-                Log.d(TAG, Float.toString(tag.translationY.get()));
+//                Log.d(TAG, Float.toString(tag.translationX.get()));
+//                Log.d(TAG, Float.toString(tag.translationY.get()));
             } catch(Exception e){
                 e.printStackTrace();
             }
