@@ -90,7 +90,7 @@ void failCallback() {
 int main(void) {
    init();
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
-   ts_puts("Hello\r\n");
+   ts_puts("Hello there\r\n");
    DW_init(SELECT_PIN, RESET_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 2000);
    initState(&state);
    DW_setReceivedCallback(&rxCallback);

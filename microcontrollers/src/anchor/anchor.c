@@ -91,7 +91,7 @@ void txCallback(Timestamp* t) {
 }
 
 void failCallback() {
-	ts_puts("FAIL\r\n");
+	//ts_puts("FAIL\r\n");
 	state.stage = POLL;
 	state.stageStarted = false;
 }
