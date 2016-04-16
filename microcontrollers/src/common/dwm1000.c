@@ -35,7 +35,7 @@ void (*rxCallback)(Timestamp* t, byte* data, int len, int srcAddr) = NULL;
 void (*txCallback)(Timestamp* t) = NULL;
 
 void DW_init(int selectPin, int rstPin, int irq, int networkId, int address, unsigned int timeout) {
-	SPI.setClockDivider(SPI_CLOCK_DIV4);
+	SPI.setClockDivider(SPI_CLOCK_DIV2);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setBitOrder(MSBFIRST);
 

@@ -78,6 +78,7 @@ void txCallback(Timestamp* t) {
       handlePollSent(&state, t);
    } else if (state.stage == FINAL) {
       ts_puts("Sent final\r\n");
+      printBytes((byte*)&(t->time), 5);
       handleFinalSent(&state);
    }
 }
@@ -92,6 +93,7 @@ int main(void) {
    ts_init(TS_CONFIG_16MHZ_9600BAUD, TS_MODE_WRITEONLY);
    ts_puts("Hello there\r\n");
    DW_init(SELECT_PIN, RESET_PIN, IRQ, NETWORK_ID, CHIP_ADDR, 2000);
+   ts_puts("configged\r\n");
    initState(&state);
    DW_setReceivedCallback(&rxCallback);
    DW_setReceiveFailedCallback(&rxFailCallback);
@@ -131,10 +133,11 @@ int main(void) {
          if(!state.stageStarted) {
             //ts_puts("Sending final\r\n");
             state.stageStarted = true;
-            Timestamp t, tReply2A, tReply2B;
+            Timestamp t, t2, tReply2A, tReply2B;
             t.time = state.respRxB.time;
             addTime(&t, &finalDelay);
-            tReply2A.time = t.time & 0x000000FFFFFFFE00;
+            tReply2A.time = (t.time & 0x000000FFFFFFFE00) + ANT_DELAY;
+            t2.time = tReply2A.time;
             tReply2B.time = tReply2A.time;
             timeDiff(&tReply2A, &(state.respRxA));
             timeDiff(&tReply2B, &(state.respRxB));
@@ -150,6 +153,11 @@ int main(void) {
             writeTimestamp(msg, T_REPLY_2B_OFFSET, &(tReply2B));
 
             DW_sendBroadcast(msg, 21, &t);
+            printBytes((byte*)&(t2.time), 5);
+            /*printBytes((byte*)&(state.respRxA), 5);
+            printBytes((byte*)&(tReply2A), 5);
+            printBytes((byte*)&(state.respRxB), 5);
+            printBytes((byte*)&(tReply2B), 5);*/
          }
       }
       DW_enableInterrupt();

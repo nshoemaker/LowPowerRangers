@@ -55,7 +55,7 @@ ifndef CHIP_ADDR
 CHIP_ADDR = 0
 endif
 ifndef ANT_DELAY
-ANT_DELAY = 0x48C0
+ANT_DELAY = 0x4030
 endif
 ifndef TARGET
 TARGET = main
