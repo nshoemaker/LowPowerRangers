@@ -78,7 +78,6 @@ void txCallback(Timestamp* t) {
       handlePollSent(&state, t);
    } else if (state.stage == FINAL) {
       ts_puts("Sent final\r\n");
-      printBytes((byte*)&(t->time), 5);
       handleFinalSent(&state);
    }
 }
@@ -153,7 +152,6 @@ int main(void) {
             writeTimestamp(msg, T_REPLY_2B_OFFSET, &(tReply2B));
 
             DW_sendBroadcast(msg, 21, &t);
-            printBytes((byte*)&(t2.time), 5);
             /*printBytes((byte*)&(state.respRxA), 5);
             printBytes((byte*)&(tReply2A), 5);
             printBytes((byte*)&(state.respRxB), 5);
