@@ -30,8 +30,12 @@ def set_method():
         try:
             global r1
             global r2
-            r1Avg = float(sum(r1)) / len(r1) 
-            r2Avg = float(sum(r2)) / len(r2)
+            r1Avg = 0
+            r2Avg = 0
+            if (len(r1) > 0):
+                r1Avg = float(sum(r1)) / len(r1) 
+            if (len(r2) > 0):
+                r2Avg = float(sum(r2)) / len(r2)
 #            r1 = []
 #            r2 = []
             url = "https://test-server-549.herokuapp.com/testServer/set/" + str(tagID) + "/" + str(B) + "/" + str(r1Avg) + "/" + str(r2Avg)

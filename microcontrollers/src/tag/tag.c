@@ -10,7 +10,7 @@
 #define RESET_PIN 9
 #define IRQ 0
 
-#define MSG_WAIT_TIME 0x17CDC0000
+#define MSG_WAIT_TIME 0x8ED280000
 
 typedef enum {POLL, RESP_A, RESP_B, FINAL} Stage;
 struct TagState {
