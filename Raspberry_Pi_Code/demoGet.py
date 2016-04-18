@@ -8,13 +8,13 @@ r2 = 0
 def setR1(r):
     global r1
     r1 = r
-    print "R1 changed to " + str(r)
+##    print "R1 changed to " + str(r)
     set_method()
 
 def setR2(r):
     global r2
     r2 = r
-    print "R2 changed to " + str(r)
+##    print "R2 changed to " + str(r)
     set_method()
     
 def set_method():
@@ -27,7 +27,7 @@ def set_method():
             url = "https://test-server-549.herokuapp.com/testServer/set/" + str(tagID) + "/" + str(B) + "/" + str(r1) + "/" + str(r2)
             print str(B) + "/" + str(r1) + "/" + str(r2)
             response = urllib.urlopen(url)
-            print response.read()
+##            print response.read()
             break
         except:
             pass

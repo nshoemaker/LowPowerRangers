@@ -20,24 +20,33 @@ def main():
     out2 = ""
     while(1):
         outChar1 = ser1.read(1)
-        if(outChar1 == "\n"):
-            out1 += outChar1
-            if(out1 != "FAIL" and out1 != ''):
-                demoGet.setR1(int(out1))
-            #print "trying to change r1 to " + str(out1)
-            out1 = ""
-        else:
-            out1 += outChar1
+        try:
+            if(outChar1 == "\n"):
+                out1 += outChar1
+                out1 = out1.strip()
+                if(out1 != "FAIL" and out1 != ''): 
+                    demoGet.setR1(int(out1))
+                    
+##                    print "trying to change r1 to " + str(out1)
+                    out1 = ""
+            else:
+                out1 += outChar1
+        except:
+            pass
 
-        outChar2 = ser2.read(1)
-        if(outChar2 == "\n"):
-            out2 += outChar2
-            if(out2 != "FAIL" and out2 != ''):
-                demoGet.setR2(int(out2))
-            #print "trying to change r2 to " + str(out2)
-            out2 = ""
-        else:
-            out2 += outChar2
+        try:
+            outChar2 = ser2.read(1)
+            if(outChar2 == "\n"):
+                out2 += outChar2
+                out2 = out2.strip()
+                if(out2 != "FAIL" and out2 != ''):
+                    demoGet.setR2(int(out2))
+##                    print "trying to change r2 to " + str(out2)
+                    out2 = ""
+            else:
+                out2 += outChar2
+        except:
+            pass
 
 
 main()
