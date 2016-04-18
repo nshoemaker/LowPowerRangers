@@ -42,8 +42,8 @@ public class Tag extends BaseObservable {
     public ObservableFloat theta;
     public ObservableFloat R;
     // Assuming size of room is 8m
-    private final int roomWidth = 300;
-    private final int roomHeight = 800;
+    private final float roomHeight = 800;
+    private final float roomWidth;
 
     private Callback customCallback = new Callback() {
             @Override
@@ -96,6 +96,7 @@ public class Tag extends BaseObservable {
         this.theta = new ObservableFloat(0);
         this.R = new ObservableFloat(0);
         this.url = this.url + tagID;
+        this.roomWidth = this.roomHeight * (dpWidth/ dpHeight);
         makeGetRequest(customCallback);
 
         Log.d(TAG, "Height in dp is " + this.dpHeight);
