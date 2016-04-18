@@ -103,7 +103,7 @@ public class Tag extends BaseObservable {
         Log.d(TAG, "Width in dp is " + this.dpWidth);
         Log.d(TAG, "dpToPX is " + this.dpToPx);
         Timer timer = new Timer();
-        timer.schedule(new UpdateTagValues(this), 0, 300);
+        timer.schedule(new UpdateTagValues(this), 0, 3000);
     }
 
     @Bindable
