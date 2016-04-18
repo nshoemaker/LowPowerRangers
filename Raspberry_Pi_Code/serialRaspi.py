@@ -1,5 +1,6 @@
 import serial
 import demoGet
+import threading
 
 def main():
     ser1 = serial.Serial(
@@ -49,4 +50,9 @@ def main():
             pass
 
 print "Abooiut to run main"
+
+t1 = threading.Thread(target=demoGet.set_method)
+t1.daemon = True
+t1.start()
+
 main()
