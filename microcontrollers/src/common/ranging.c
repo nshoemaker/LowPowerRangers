@@ -10,8 +10,8 @@ void writeTimestamp(byte* data, int offset, Timestamp* t) {
 	}
 }
 
-void printInt(unsigned int n) {
+void printInt(int n) {
    char tmp[5];
-   sprintf(tmp, "%u", n);
+   sprintf(tmp, "%d", n);
    ts_puts(tmp);
 }

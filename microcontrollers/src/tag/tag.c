@@ -10,7 +10,7 @@
 #define RESET_PIN 9
 #define IRQ 0
 
-#define MSG_WAIT_TIME 0xBE6E00000
+#define MSG_WAIT_TIME 0x8ED280000
 
 typedef enum {POLL, RESP_A, RESP_B, FINAL} Stage;
 struct TagState {
@@ -36,11 +36,11 @@ void handlePollSent(TagState* a, Timestamp* t) {
 
 void handleResp(TagState* a, Timestamp* t) {
    if (a->stage == RESP_A) {
-      ts_puts("RESP_A\r\n");
+      //ts_puts("RESP_A\r\n");
       a->stage = RESP_B;
       a->respRxA.time = t->time;
    } else {
-      ts_puts("RESP_B\r\n");
+      //ts_puts("RESP_B\r\n");
       a->stage = FINAL;
       a->respRxB.time = t->time;
    }
