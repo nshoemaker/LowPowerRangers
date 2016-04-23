@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pixel_view"
-    tools:context="edu.cmu.stuco.android.whatdo.ToDoActivity">
+    tools:context="edu.cmu.stuco.android.whatdo.ToDoActivity"
+    android:configChanges="keyboardHidden|orientation">
 
     <!--<com.example.shashwatsrivastava.androidapp549.PixelGridView-->
         <!--android:layout_width="match_parent"-->

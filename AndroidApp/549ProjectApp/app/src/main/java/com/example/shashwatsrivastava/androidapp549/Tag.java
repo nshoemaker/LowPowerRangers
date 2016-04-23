@@ -96,7 +96,7 @@ public class Tag extends BaseObservable {
         translationY.set(deltaY);
     }
 
-    public Tag(String tagID, String tagName, Context context) {
+    public Tag(String tagID, String tagName) {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
         this.dpToPx = DisplayUtilities.dpToPx(1);
@@ -109,7 +109,7 @@ public class Tag extends BaseObservable {
         this.url = this.url + tagID;
         this.roomWidth = this.roomHeight * (dpWidth/ dpHeight);
         makeGetRequest(customCallback);
-        this.context = context;
+//        this.context = context;
 
         Log.d(TAG, "Height in dp is " + this.dpHeight);
         Log.d(TAG, "Width in dp is " + this.dpWidth);
