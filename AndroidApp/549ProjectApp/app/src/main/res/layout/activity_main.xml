@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.shashwatsrivastava.androidapp549.PixelGridView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/pixel_view"
     tools:context="edu.cmu.stuco.android.whatdo.ToDoActivity">
 
+    <!--<com.example.shashwatsrivastava.androidapp549.PixelGridView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
 
     <android.support.design.widget.FloatingActionButton
@@ -22,8 +26,9 @@
         android:layout_height="30dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="    Anchor Position"
+        android:textColor="@color/white"
         android:id="@+id/anchor_position"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"/>
 
-</RelativeLayout>
+</com.example.shashwatsrivastava.androidapp549.PixelGridView>

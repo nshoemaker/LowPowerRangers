@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         @Override
         public void onFailure(Call call, IOException e) {
             // Something went wrong
+            Log.d(TAG, "The call went wrong");
         }
 
         @Override
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                         public void run() {
                             Tag newTag = new Tag(tagId, tagName);
                             tagIDsSeen.add(tagId);
+                            // android.R.id.content gives you the root view
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
                             LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
                             TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     }
 
     private Call makeGetRequest(String url, Callback callback) throws IOException {
+        Log.d(TAG, "Making get request for url " + url);
         OkHttpClient client =  new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
