@@ -12,14 +12,17 @@
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:text="Enter Tag ID"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"/>
 
 
         <EditText
             android:id="@+id/task_EnterTagID"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -30,14 +33,17 @@
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:text="Enter Tag Name"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"/>
 
 
         <EditText
             android:id="@+id/task_EnterName"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"/>
     </RelativeLayout>
 
 </LinearLayout>
