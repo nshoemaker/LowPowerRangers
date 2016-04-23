@@ -12,7 +12,8 @@
         android:paddingLeft="0dp"
         android:paddingTop="0dp"
         android:translationX="@{tag.translationX}"
-        android:translationY="@{tag.translationY}">
+        android:translationY="@{tag.translationY}"
+        app:onClickListener="@{tag.clickListener}">
 
         <TextView
             android:layout_width="100dp"
@@ -26,6 +27,8 @@
             android:layout_height="25dp"
             android:background="@drawable/circle"
             android:layout_gravity="center_horizontal"/>
+
+
 
     </LinearLayout>
 </layout>

@@ -5,7 +5,11 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableFloat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -92,7 +96,7 @@ public class Tag extends BaseObservable {
         translationY.set(deltaY);
     }
 
-    public Tag(String tagID, String tagName) {
+    public Tag(String tagID, String tagName, Context context) {
         this.tagID = Integer.parseInt(tagID);
         this.tagName = tagName;
         this.dpToPx = DisplayUtilities.dpToPx(1);
@@ -105,7 +109,7 @@ public class Tag extends BaseObservable {
         this.url = this.url + tagID;
         this.roomWidth = this.roomHeight * (dpWidth/ dpHeight);
         makeGetRequest(customCallback);
-        //this.context = context;
+        this.context = context;
 
         Log.d(TAG, "Height in dp is " + this.dpHeight);
         Log.d(TAG, "Width in dp is " + this.dpWidth);
@@ -129,15 +133,25 @@ public class Tag extends BaseObservable {
         return call;
     }
 
-    /**
-     * This functions open a Toast which displays the info
-     * for the given tag
-     */
-//    public void displayInfoOnClick(View v) {
-//        StringBuilder info = new StringBuilder();
-//
-//        Toast.makeText(this.context, "Shashy number one", Toast.LENGTH_LONG).show();
-//    }
+    public View.OnClickListener clickListener = new View.OnClickListener() {
+        /**
+         * This functions open a Toast which displays the info
+         * for the given tag
+         */
+        @Override
+        public void onClick(View v) {
+            PopupWindow popupWindow = new PopupWindow(v.getContext());
+            View view = LayoutInflater.from(v.getContext()).inflate(
+                    com.example.shashwatsrivastava.androidapp549.R.layout.tag_info, null, false);
+            TextView r = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_r);
+            r.setText("The distance from the center is " + Float.toString(Tag.this.R.get()));
+            TextView theta = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
+            theta.setText("Theta is " + Float.toString(Tag.this.theta.get()));
+            popupWindow.setFocusable(true);
+            popupWindow.setContentView(view);
+            popupWindow.showAsDropDown(v);
+        }
+    };
 
     private class UpdateTagValues extends TimerTask {
         private Tag tag;

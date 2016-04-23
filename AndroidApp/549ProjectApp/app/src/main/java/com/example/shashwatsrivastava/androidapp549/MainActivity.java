@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Tag newTag = new Tag(tagId, tagName);
+                            Tag newTag = new Tag(tagId, tagName, getApplicationContext());
                             tagIDsSeen.add(tagId);
                             // android.R.id.content gives you the root view
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
