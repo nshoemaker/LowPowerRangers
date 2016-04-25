@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
@@ -87,6 +88,12 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
+        TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
+        int cellHeight = pixelGridView.getCellHeight();
+        String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
+        dimensions.setText(dimensionsMessage);
 
         // Setup FAB
         FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);

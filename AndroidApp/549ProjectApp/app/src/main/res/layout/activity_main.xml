@@ -32,4 +32,14 @@
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"/>
 
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:textColor="@color/white"
+        android:id="@+id/dimensions_position"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="25dp"
+        android:paddingBottom="10dp"/>
+
 </com.example.shashwatsrivastava.androidapp549.PixelGridView>
