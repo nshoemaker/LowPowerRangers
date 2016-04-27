@@ -3,7 +3,7 @@ import json
 import csv
 from time import sleep
 
-NUM_POINTS = 5
+NUM_POINTS = 50
 
 def readInput(prompt):
     s = raw_input(prompt)
