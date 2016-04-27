@@ -1,8 +1,9 @@
 import urllib2
 import json
 import csv
+from time import sleep
 
-NUM_POINTS = 100
+NUM_POINTS = 50
 
 def readInput(prompt):
     s = raw_input(prompt)
@@ -43,6 +44,7 @@ with open('data.csv', 'wb') as csvfile:
                     dataDict[b]['rs'] += [100 * abs(data['R'] - realR) / realR]
                     dataDict[b]['thetas'] += [abs(data['theta'] - realTh)]
                     successes += 1
+		    sleep(.2)
                 except Exception:
                     pass
         except Exception:
