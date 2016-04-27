@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="tag"
@@ -9,19 +9,26 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingLeft="0dp"
+        android:paddingTop="0dp"
         android:translationX="@{tag.translationX}"
-        android:translationY="@{tag.translationY}">
+        android:translationY="@{tag.translationY}"
+        app:onClickListener="@{tag.clickListener}">
 
         <TextView
             android:layout_width="100dp"
-            android:layout_height="50dp"
+            android:layout_height="20dp"
             android:text="@{tag.tagName}"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_horizontal"
+            android:textColor="@color/white"/>
 
-        <View android:layout_width="50dp"
-            android:layout_height="50dp"
+
+        <View android:layout_width="25dp"
+            android:layout_height="25dp"
             android:background="@drawable/circle"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"/>
+
+
 
     </LinearLayout>
 </layout>

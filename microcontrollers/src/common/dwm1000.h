@@ -95,6 +95,7 @@ struct Timestamp {
 #define CLOCK_ERR_BIT 25
 #define PREAMBLE_ERR_BIT 26
 #define HEADER_ERR_BIT 12
+#define TOO_LATE_BIT 27
 //				  3322 2222 2222 1111 1111 1100 0000 0000
 //				  1098 7654 3210 9876 5432 1098 7654 3210
 
@@ -113,7 +114,7 @@ struct Timestamp {
 #define CONFIG_SETTINGS 0b00100000000000000001011111111101L
 #define TX_SETTINGS 0b00000000000101101100000000000000L
 #define IFS_DELAY 0b00000000
-#define ANT_DELAY 0x48C0
+//#define ANT_DELAY 0x48C0
 #define TX_POWER 0x15355575L
 #define CHANNEL_SETTINGS 0b01001010010010000000000000100010L
 #define AGC1 0x889B
@@ -156,7 +157,8 @@ extern byte msgLen;
 
 void printBytes(byte* data, int n);
 
-void DW_init(int selectPin, int irq, int networkId, int address, unsigned int timeout);
+void DW_init(int selectPin, int rstPin, int irq, int networkId, int address, unsigned int timeout);
+void DW_reset();
 
 void DW_getDevID(byte* devId);
 unsigned int DW_getAddr();
@@ -170,6 +172,7 @@ void DW_receiveMessage(Timestamp* d);
 void DW_setSentCallback(void (*cb)(Timestamp*));
 void DW_setReceivedCallback(void (*cb)(Timestamp*, byte*, int, int));
 void DW_setReceiveFailedCallback(void (*cb)(void));
+void DW_setGeneralFailCallback(void (*cb)(void));
 
 // Timestamp functions
 void printTime(Timestamp* t);
