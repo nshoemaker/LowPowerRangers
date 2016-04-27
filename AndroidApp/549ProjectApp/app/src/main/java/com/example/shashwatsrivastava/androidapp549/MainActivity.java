@@ -2,6 +2,7 @@ package com.example.shashwatsrivastava.androidapp549;
 
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
+import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
@@ -20,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,7 +31,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
-    private HashSet<String> tagIDsSeen = new HashSet<>();
+    private HashMap<String, String> tagIDsSeen = new HashMap<String,String>();
     private static final String TAG = "Tag";
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String tagId;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         @Override
         public void onFailure(Call call, IOException e) {
             // Something went wrong
+            Log.d(TAG, "The call went wrong");
         }
 
         @Override
@@ -57,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                         @Override
                         public void run() {
                             Tag newTag = new Tag(tagId, tagName);
-                            tagIDsSeen.add(tagId);
+                            tagIDsSeen.put(tagId, tagName);
+                            // android.R.id.content gives you the root view
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
                             LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
                             TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
@@ -85,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
+        TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
+        int cellHeight = pixelGridView.getCellHeight();
+        String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
+        dimensions.setText(dimensionsMessage);
+
         // Setup FAB
         FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);
         addItemFab.setImageResource(R.drawable.ic_add_white_24dp);
@@ -96,12 +106,29 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             }
         });
 
+        if(savedInstanceState != null){
+            this.tagIDsSeen = (HashMap<String, String>)savedInstanceState.getSerializable("Tags");
+            for(String tagId: tagIDsSeen.keySet()){
+                Tag newTag = new Tag(tagId, tagIDsSeen.get(tagId));
+                // android.R.id.content gives you the root view
+                ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
+                LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+                TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
+                        viewGroup, true);
+                binding.setTag(newTag);
+            }
+        }
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putSerializable("Tags", tagIDsSeen);
     }
 
     @Override
     public void onPositiveClick(String tagId, String tagName) {
-        if(tagIDsSeen.contains(tagId)){
+        if(tagIDsSeen.containsKey(tagId)){
             Toast.makeText(this, R.string.tagID_already_seen, Toast.LENGTH_LONG).show();
             return;
         }
@@ -119,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     }
 
     private Call makeGetRequest(String url, Callback callback) throws IOException {
+        Log.d(TAG, "Making get request for url " + url);
         OkHttpClient client =  new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.shashwatsrivastava.androidapp549.PixelGridView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="edu.cmu.stuco.android.whatdo.ToDoActivity">
+    android:id="@+id/pixel_view"
+    tools:context="edu.cmu.stuco.android.whatdo.ToDoActivity"
+    android:configChanges="keyboardHidden|orientation">
 
+    <!--<com.example.shashwatsrivastava.androidapp549.PixelGridView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
 
     <android.support.design.widget.FloatingActionButton
@@ -22,8 +27,19 @@
         android:layout_height="30dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="    Anchor Position"
+        android:textColor="@color/white"
         android:id="@+id/anchor_position"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"/>
 
-</RelativeLayout>
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:textColor="@color/white"
+        android:id="@+id/dimensions_position"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="25dp"
+        android:paddingBottom="10dp"/>
+
+</com.example.shashwatsrivastava.androidapp549.PixelGridView>
