@@ -3,7 +3,7 @@ import json
 import csv
 from time import sleep
 
-NUM_POINTS = 50
+NUM_POINTS = 5
 
 def readInput(prompt):
     s = raw_input(prompt)
@@ -11,13 +11,17 @@ def readInput(prompt):
 
 def getTopRow(d):
     for i in d:
+        yield "Expected R"
         yield '% R error(' + str(i) + ")"
+        yield "Expected Theta"
         yield 'theta error(' + str(i) + ")"
 
 def getDataRow(d, i):
     for b in d:
         if i < len(d[b]['rs']):
+            yield d[b]['real_rs'][i]
             yield d[b]['rs'][i]
+            yield d[b]['real_thetas'][i]
             yield d[b]['thetas'][i]
         else:
             yield ""
@@ -36,13 +40,17 @@ with open('data.csv', 'wb') as csvfile:
                 dataDict[b] = {}
                 dataDict[b]['rs'] = []
                 dataDict[b]['thetas'] = []
+                dataDict[b]['real_rs'] = []
+                dataDict[b]['real_thetas'] = []
 
             successes = 0
             while (successes < NUM_POINTS):
                 try:
                     data = json.load(urllib2.urlopen('https://test-server-549.herokuapp.com/testServer/get/1/'))
                     dataDict[b]['rs'] += [100 * abs(data['R'] - realR) / realR]
+                    dataDict[b]['real_rs'] += [realR]
                     dataDict[b]['thetas'] += [abs(data['theta'] - realTh)]
+                    dataDict[b]['real_thetas'] += [realTh]
                     successes += 1
 		    sleep(.2)
                 except Exception:
