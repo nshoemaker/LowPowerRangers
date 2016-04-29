@@ -1,16 +1,13 @@
 package com.example.shashwatsrivastava.androidapp549;
 
-import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
-import android.os.Parcelable;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +21,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -33,10 +31,13 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private HashMap<String, String> tagIDsSeen = new HashMap<String,String>();
-    private static final String TAG = "Tag";
+    private static final String TAG = "InMain";
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String tagId;
     private String tagName;
+    private HashSet<Tag> tagsSeen = new HashSet<>();
+    private float scaleFactor = 1.f;
+    private ScaleGestureDetector detector;
 
     private Callback customCallback = new Callback() {
         @Override
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                         @Override
                         public void run() {
                             Tag newTag = new Tag(tagId, tagName);
+                            tagsSeen.add(newTag);
                             tagIDsSeen.put(tagId, tagName);
                             // android.R.id.content gives you the root view
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
@@ -89,13 +91,10 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        detector = new ScaleGestureDetector(this, new ScaleListener());
         setContentView(R.layout.activity_main);
 
-        PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
-        TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
-        int cellHeight = pixelGridView.getCellHeight();
-        String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
-        dimensions.setText(dimensionsMessage);
+        changeTextBoxMessage();
 
         // Setup FAB
         FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);
@@ -120,6 +119,15 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 binding.setTag(newTag);
             }
         }
+    }
+
+    private void changeTextBoxMessage(){
+        PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
+        TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
+        float cellHeight = pixelGridView.getCellHeight() / scaleFactor;
+        String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
+        dimensions.setText(dimensionsMessage);
+        Log.d(TAG, dimensionsMessage);
     }
 
     @Override
@@ -157,6 +165,29 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         Call call = client.newCall(request);
         call.enqueue(callback);
         return call;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        detector.onTouchEvent(event);
+        return true;
+    }
+
+    private void changeTagRoomSizes(float factor){
+        for(Tag tag : tagsSeen){
+            tag.setRoomHeight(factor);
+        }
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            scaleFactor *= detector.getScaleFactor();
+            scaleFactor = Math.max(1.0f, Math.min(5.0f, scaleFactor));
+            changeTagRoomSizes(scaleFactor);
+            changeTextBoxMessage();
+            return true;
+        }
     }
 
 }

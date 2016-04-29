@@ -59,8 +59,9 @@ public class Tag extends BaseObservable {
     public ObservableFloat theta;
     public ObservableFloat R;
     // Assuming size of room is 8m
-    private final float roomHeight = 800;
-    private final float roomWidth;
+    private float baseRoomHeight = 800;
+    private float roomHeight = 800;
+    private float roomWidth;
     private Context context;
 
     private Callback customCallback = new Callback() {
@@ -174,6 +175,14 @@ public class Tag extends BaseObservable {
             popupWindow.showAsDropDown(v);
         }
     };
+
+    public void setRoomHeight(float factor){
+        roomHeight = baseRoomHeight / factor;
+        Log.d(TAG, "The room height is ");
+        Log.d(TAG, Float.toString(roomHeight));
+        roomWidth = this.roomHeight * (dpWidth/ dpHeight);
+        setNewTagPosition();
+    }
 
     private class UpdateTagValues extends TimerTask {
         private Tag tag;
