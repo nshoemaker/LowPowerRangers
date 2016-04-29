@@ -189,17 +189,17 @@ public class Tag extends BaseObservable {
          * for the given tag
          */
         @Override
-        public void onClick(View v) {
-            PopupWindow popupWindow = new PopupWindow(v.getContext());
-            View view = LayoutInflater.from(v.getContext()).inflate(
-                    com.example.shashwatsrivastava.androidapp549.R.layout.tag_info, null, false);
+        public void onClick(View view) {
             TextView r = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_r);
             r.setText("The distance from the center is " + Float.toString(Tag.this.R.get()));
             TextView theta = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
             theta.setText("Theta is " + Float.toString(Tag.this.theta.get()));
-            popupWindow.setFocusable(true);
-            popupWindow.setContentView(view);
-            popupWindow.showAsDropDown(v);
+            final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
+            if(linearLayout.getVisibility() == View.VISIBLE){
+                linearLayout.setVisibility(View.INVISIBLE);
+            }else{
+                linearLayout.setVisibility(View.VISIBLE);
+            }
         }
     };
 
