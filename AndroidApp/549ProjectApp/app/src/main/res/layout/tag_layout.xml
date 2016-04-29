@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingLeft="0dp"
         android:paddingTop="0dp"
-        android:translationX="@{tag.translationX}"
-        android:translationY="@{tag.translationY}"
+        app:targetX="@{tag.translationX}"
+        app:targetY="@{tag.translationY}"
         app:onClickListener="@{tag.clickListener}">
 
         <TextView

@@ -1,12 +1,18 @@
 package com.example.shashwatsrivastava.androidapp549;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.BindingAdapter;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableFloat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -33,12 +39,16 @@ import okhttp3.Response;
 public class Tag extends BaseObservable {
     private int tagID;
     private static final String TAG = "TagInTag";
+    private static final int UPDATE_MILLIS = 300;
     private String tagName;
     public ObservableFloat translationX;
     public ObservableFloat translationY;
     private float dpToPx;
     private float dpHeight;
     private float dpWidth;
+    // Last updated coordinates
+    private float targetX;
+    private float targetY;
     // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
     // than tag center
     private int tagViewHeight = 45;
@@ -78,13 +88,28 @@ public class Tag extends BaseObservable {
             }
         };
 
+    @BindingAdapter({"app:targetX", "app:targetY"})
+    public static void animateTranslation(LinearLayout layout, float x, float y) {
+        Log.d(TAG, "My x is " + layout.getX());
+        Log.d(TAG, "My y is " + layout.getY());
+        Log.d(TAG, "My x will be " + x);
+        Log.d(TAG, "My y will be " + y);
+
+        ObjectAnimator animX = ObjectAnimator.ofFloat(layout, "x", layout.getX(), x);
+        ObjectAnimator animY = ObjectAnimator.ofFloat(layout, "y", layout.getY(), y);
+        animX.setDuration(UPDATE_MILLIS * 3);
+        animY.setDuration(UPDATE_MILLIS * 3);
+        animX.start();
+        animY.start();
+    }
+
     /**
      * This method uses the values of R and theta to
      * calculate the new position for the tag dot
      */
     private void setNewTagPosition() {
-        float deltaX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta.get()) * R.get() * (this.dpWidth / this.roomWidth)) * this.dpToPx);
-        float deltaY = (float) (((Math.cos(theta.get()) * R.get() * (this.dpHeight / this.roomHeight)) - 0.75 * tagViewHeight) * this.dpToPx);
+        targetX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta.get()) * R.get() * (this.dpWidth / this.roomWidth)) * this.dpToPx);
+        targetY = (float) (((Math.cos(theta.get()) * R.get() * (this.dpHeight / this.roomHeight)) - 0.75 * tagViewHeight) * this.dpToPx);
 //        Log.d(TAG, "Theta is " + theta);
 //        Log.d(TAG, "R is " + R);
 //        Log.d(TAG, "deltaX is " + deltaX);
@@ -92,8 +117,8 @@ public class Tag extends BaseObservable {
         Log.d(TAG, Double.toString(Math.cos(theta.get()) * R.get() ));
         Log.d(TAG, Double.toString((this.dpHeight / this.roomHeight)));
         Log.d(TAG, Double.toString(0.75 * tagViewHeight));
-        translationX.set(deltaX);
-        translationY.set(deltaY);
+        translationX.set(targetX);
+        translationY.set(targetY);
     }
 
     public Tag(String tagID, String tagName) {
@@ -102,8 +127,10 @@ public class Tag extends BaseObservable {
         this.dpToPx = DisplayUtilities.dpToPx(1);
         this.dpHeight = DisplayUtilities.getDpHeight();
         this.dpWidth = DisplayUtilities.getDpWidth();
-        this.translationX = new ObservableFloat(dpWidth/2 * this.dpToPx - tagViewWidth);
-        this.translationY = new ObservableFloat(dpHeight/2 * this.dpToPx - tagViewHeight);
+        this.targetX = dpWidth/2 * this.dpToPx - tagViewWidth;
+        this.targetY = dpHeight/2 * this.dpToPx - tagViewHeight;
+        this.translationX = new ObservableFloat(targetX);
+        this.translationY = new ObservableFloat(targetY);
         this.theta = new ObservableFloat(0);
         this.R = new ObservableFloat(0);
         this.url = this.url + tagID;
@@ -115,7 +142,7 @@ public class Tag extends BaseObservable {
         Log.d(TAG, "Width in dp is " + this.dpWidth);
         Log.d(TAG, "dpToPX is " + this.dpToPx);
         Timer timer = new Timer();
-        timer.schedule(new UpdateTagValues(this), 0, 300);
+        timer.schedule(new UpdateTagValues(this), 0, UPDATE_MILLIS);
     }
 
     @Bindable
