@@ -35,7 +35,6 @@ public class Tag extends BaseObservable {
     private static final String TAG = "TagInTag";
     private static final int UPDATE_MILLIS = 300;
     private String tagName;
-    public String locationString = "";
     public ObservableFloat translationX;
     public ObservableFloat translationY;
     private float dpToPx;
@@ -136,9 +135,6 @@ public class Tag extends BaseObservable {
         } else{
             translationY.set(targetY);
         }
-        this.locationString = "The distance from the center is" +
-                String.format("%.1f", Tag.this.R.get()) + " and the angle is " +
-                String.format("%.1f", Tag.this.theta.get());
     }
 
     public Tag(String tagID, String tagName) {
@@ -168,11 +164,6 @@ public class Tag extends BaseObservable {
     @Bindable
     public String getTagName(){
         return this.tagName;
-    }
-
-    @Bindable
-    public String getLocationString(){
-        return this.locationString;
     }
 
     private Call makeGetRequest(Callback callback) {
