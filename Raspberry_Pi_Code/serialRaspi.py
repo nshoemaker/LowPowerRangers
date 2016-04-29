@@ -40,11 +40,13 @@ def main():
                 out1 = out1.strip()
                 if(out1 != "FAIL" and out1 != ''): 
                     demoGet.setR1(int(out1))
+                    print out1
 #                    print "trying to change r1 to " + str(out1)
                 out1 = ""
             else:
                 out1 += outChar1
-        except Exception:
+        except Exception, e:
+            print e
             out1 = ""
             pass
 
