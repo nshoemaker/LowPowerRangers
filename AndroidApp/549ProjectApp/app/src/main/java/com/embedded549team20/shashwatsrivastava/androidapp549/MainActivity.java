@@ -1,4 +1,4 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.DialogFragment;
@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
+import com.embedded549team20.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;

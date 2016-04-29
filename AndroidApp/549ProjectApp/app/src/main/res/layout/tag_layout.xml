@@ -3,7 +3,7 @@
     <data>
         <variable
             name="tag"
-            type="com.example.shashwatsrivastava.androidapp549.Tag" />
+            type="com.embedded549team20.shashwatsrivastava.androidapp549.Tag" />
     </data>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

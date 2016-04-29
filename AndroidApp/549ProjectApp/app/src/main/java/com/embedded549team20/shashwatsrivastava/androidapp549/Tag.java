@@ -1,22 +1,15 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableFloat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -190,11 +183,11 @@ public class Tag extends BaseObservable {
          */
         @Override
         public void onClick(View view) {
-            TextView r = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_r);
+            TextView r = (TextView) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.tag_info_r);
             r.setText("The distance from the center is " + Float.toString(Tag.this.R.get()));
-            TextView theta = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
+            TextView theta = (TextView) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
             theta.setText("Theta is " + Float.toString(Tag.this.theta.get()));
-            final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
+            final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
             if(linearLayout.getVisibility() == View.VISIBLE){
                 linearLayout.setVisibility(View.INVISIBLE);
             }else{

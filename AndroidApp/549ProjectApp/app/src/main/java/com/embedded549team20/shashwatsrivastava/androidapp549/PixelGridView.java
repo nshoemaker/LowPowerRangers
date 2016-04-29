@@ -1,15 +1,11 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.widget.RelativeLayout;
-
-import java.util.zip.DeflaterInputStream;
 
 /**
  * Created by shashwatsrivastava on 4/21/16.
