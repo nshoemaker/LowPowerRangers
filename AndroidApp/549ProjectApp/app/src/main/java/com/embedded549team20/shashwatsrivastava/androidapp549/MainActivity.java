@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.embedded549team20.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +26,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import com.embedded549team20.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private HashMap<String, String> tagIDsSeen = new HashMap<String,String>();

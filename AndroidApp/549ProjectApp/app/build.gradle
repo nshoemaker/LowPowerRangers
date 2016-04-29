@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.example.shashwatsrivastava.androidapp549"
+        applicationId "com.embedded549team20.shashwatsrivastava.androidapp549"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1

@@ -35,6 +35,7 @@ public class Tag extends BaseObservable {
     private static final String TAG = "TagInTag";
     private static final int UPDATE_MILLIS = 300;
     private String tagName;
+    public String locationString = "";
     public ObservableFloat translationX;
     public ObservableFloat translationY;
     private float dpToPx;
@@ -135,6 +136,9 @@ public class Tag extends BaseObservable {
         } else{
             translationY.set(targetY);
         }
+        this.locationString = "The distance from the center is" +
+                String.format("%.1f", Tag.this.R.get()) + " and the angle is " +
+                String.format("%.1f", Tag.this.theta.get());
     }
 
     public Tag(String tagID, String tagName) {
@@ -166,6 +170,11 @@ public class Tag extends BaseObservable {
         return this.tagName;
     }
 
+    @Bindable
+    public String getLocationString(){
+        return this.locationString;
+    }
+
     private Call makeGetRequest(Callback callback) {
         Request request = new Request.Builder()
                 .url(this.url)
@@ -183,10 +192,6 @@ public class Tag extends BaseObservable {
          */
         @Override
         public void onClick(View view) {
-            TextView r = (TextView) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.tag_info_r);
-            r.setText("The distance from the center is " + Float.toString(Tag.this.R.get()));
-            TextView theta = (TextView) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
-            theta.setText("Theta is " + Float.toString(Tag.this.theta.get()));
             final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
             if(linearLayout.getVisibility() == View.VISIBLE){
                 linearLayout.setVisibility(View.INVISIBLE);
