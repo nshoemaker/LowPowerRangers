@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -63,6 +64,8 @@ public class Tag extends BaseObservable {
     private float roomHeight = 800;
     private float roomWidth;
     private Context context;
+    private ArrayList<Float> arrayX = new ArrayList<>();
+    private ArrayList<Float> arrayY = new ArrayList<>();
 
     private Callback customCallback = new Callback() {
             @Override
@@ -99,6 +102,14 @@ public class Tag extends BaseObservable {
         animY.start();
     }
 
+    private Float getAverageOfArray(ArrayList<Float> arr){
+        Float total = 0.0f;
+        for(Float num : arr){
+            total += num;
+        }
+        return total / arr.size();
+    }
+
     /**
      * This method uses the values of R and theta to
      * calculate the new position for the tag dot
@@ -110,11 +121,27 @@ public class Tag extends BaseObservable {
 //        Log.d(TAG, "R is " + R);
 //        Log.d(TAG, "deltaX is " + deltaX);
 //        Log.d(TAG, "deltaY is " + deltaY);
-        Log.d(TAG, Double.toString(Math.cos(theta.get()) * R.get() ));
+        if(arrayX.size() >= 5){
+            arrayX.remove(0);
+        }
+        if(arrayY.size() >= 5){
+            arrayY.remove(0);
+        }
+        arrayX.add(targetX);
+        arrayY.add(targetY);
+        Log.d(TAG, Double.toString(Math.cos(theta.get()) * R.get()));
         Log.d(TAG, Double.toString((this.dpHeight / this.roomHeight)));
         Log.d(TAG, Double.toString(0.75 * tagViewHeight));
-        translationX.set(targetX);
-        translationY.set(targetY);
+        if(arrayX.size() >= 5){
+            translationX.set(getAverageOfArray(arrayX));
+        } else {
+            translationX.set(targetX);
+        }
+        if(arrayY.size() >= 5){
+            translationY.set(getAverageOfArray(arrayY));
+        } else{
+            translationY.set(targetY);
+        }
     }
 
     public Tag(String tagID, String tagName) {

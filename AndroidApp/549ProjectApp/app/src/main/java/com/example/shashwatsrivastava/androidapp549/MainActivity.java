@@ -127,7 +127,9 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
         TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
         float cellHeight = (baseRoomHeight / pixelGridView.getNumRows()) / scaleFactor;
-        String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
+        String dimensionsMessage = "Each square is " +
+                String.format("%.1f",cellHeight) + "cm by " +
+                String.format("%.1f",cellHeight) + "cm";
         dimensions.setText(dimensionsMessage);
         Log.d(TAG, dimensionsMessage);
     }
