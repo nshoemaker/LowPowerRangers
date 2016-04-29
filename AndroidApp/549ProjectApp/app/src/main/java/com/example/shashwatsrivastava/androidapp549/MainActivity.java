@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     private HashSet<Tag> tagsSeen = new HashSet<>();
     private float scaleFactor = 1.f;
     private ScaleGestureDetector detector;
+    private final int baseRoomHeight = 800;
 
     private Callback customCallback = new Callback() {
         @Override
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             this.tagIDsSeen = (HashMap<String, String>)savedInstanceState.getSerializable("Tags");
             for(String tagId: tagIDsSeen.keySet()){
                 Tag newTag = new Tag(tagId, tagIDsSeen.get(tagId));
+                tagsSeen.add(newTag);
                 // android.R.id.content gives you the root view
                 ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
                 LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     private void changeTextBoxMessage(){
         PixelGridView pixelGridView = (PixelGridView) findViewById(R.id.pixel_view);
         TextView dimensions = (TextView) findViewById(R.id.dimensions_position);
-        float cellHeight = pixelGridView.getCellHeight() / scaleFactor;
+        float cellHeight = (baseRoomHeight / pixelGridView.getNumRows()) / scaleFactor;
         String dimensionsMessage = "Each square is " + cellHeight + "cm by " + cellHeight + "cm";
         dimensions.setText(dimensionsMessage);
         Log.d(TAG, dimensionsMessage);
@@ -183,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
             scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(1.0f, Math.min(5.0f, scaleFactor));
+            scaleFactor = Math.max(0.3f, Math.min(5.0f, scaleFactor));
             changeTagRoomSizes(scaleFactor);
             changeTextBoxMessage();
             return true;
