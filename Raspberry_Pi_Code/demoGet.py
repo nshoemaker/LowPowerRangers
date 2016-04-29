@@ -1,11 +1,11 @@
 import urllib, json
 import time
 
-B = 140
+B = 150
 tagID = 1
 r1 = []
 r2 = []
-arraySize = 5
+arraySize = 1
 
 def setR1(r):
     global r1
