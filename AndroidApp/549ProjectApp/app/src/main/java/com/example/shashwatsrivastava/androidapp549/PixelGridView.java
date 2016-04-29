@@ -102,10 +102,11 @@ public class PixelGridView extends RelativeLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+
 
         canvas.save();
         canvas.scale(mScaleFactor, mScaleFactor);
+        super.onDraw(canvas);
         float displayWidth = DisplayUtilities.getDpWidth();
         float displayHeight = DisplayUtilities.getDpHeight();
 
@@ -150,7 +151,7 @@ public class PixelGridView extends RelativeLayout {
         for (int i = 1; i < numRows; i++) {
             canvas.drawLine(0, i * cellHeight, width, i * cellHeight, redPaint);
         }
-        canvas.restore();
+        //canvas.restore();
     }
 
     @Override

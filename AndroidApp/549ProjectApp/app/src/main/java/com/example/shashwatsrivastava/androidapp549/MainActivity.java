@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -65,8 +66,9 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                             ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
                             LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
                             TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
-                                    viewGroup, true);
+                                    viewGroup, false);
                             binding.setTag(newTag);
+                            viewGroup.addView(binding.getRoot());
                             Log.d("ERROR", "Added the tag");
                         }
                     });
