@@ -184,6 +184,7 @@ public class Tag extends BaseObservable {
         @Override
         public void onClick(View view) {
             final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
+            linearLayout.setBackgroundResource(com.embedded549team20.shashwatsrivastava.androidapp549.R.drawable.rounded_rectangle);
             if(linearLayout.getVisibility() == View.VISIBLE){
                 linearLayout.setVisibility(View.INVISIBLE);
             }else{
