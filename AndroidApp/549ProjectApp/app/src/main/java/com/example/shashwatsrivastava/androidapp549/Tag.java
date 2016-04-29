@@ -90,11 +90,6 @@ public class Tag extends BaseObservable {
 
     @BindingAdapter({"app:targetX", "app:targetY"})
     public static void animateTranslation(LinearLayout layout, float x, float y) {
-        Log.d(TAG, "My x is " + layout.getX());
-        Log.d(TAG, "My y is " + layout.getY());
-        Log.d(TAG, "My x will be " + x);
-        Log.d(TAG, "My y will be " + y);
-
         ObjectAnimator animX = ObjectAnimator.ofFloat(layout, "x", layout.getX(), x);
         ObjectAnimator animY = ObjectAnimator.ofFloat(layout, "y", layout.getY(), y);
         animX.setDuration(UPDATE_MILLIS * 3);
