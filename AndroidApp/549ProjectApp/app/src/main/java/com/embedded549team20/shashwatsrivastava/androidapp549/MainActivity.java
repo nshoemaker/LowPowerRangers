@@ -343,8 +343,13 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             for(Tag tag : tagsSeen){
                 Float R = tag.R.get();
                 Float theta = tag.theta.get();
-                Float X = (float) (Math.tan(theta) * bitmap.getWidth() / 2);
-                canvas.drawLine(bitmap.getWidth()/2, 0, 0, X, paint);
+                if(theta < 0){
+                    Float X = (float) (Math.cos(Math.abs(theta)) * R);
+                    canvas.drawLine(bitmap.getWidth()/2, 0, 0, X, paint);
+                } else{
+                    Float X = (float) (Math.cos(theta) * R);
+                    canvas.drawLine(bitmap.getWidth()/2, 0, bitmap.getWidth(), X, paint);
+                }
             }
             //canvas.drawLine(0, resultBitmap.getHeight()/2, resultBitmap.getWidth(), resultBitmap.getHeight()/2, paint);
             bitmap.recycle();
