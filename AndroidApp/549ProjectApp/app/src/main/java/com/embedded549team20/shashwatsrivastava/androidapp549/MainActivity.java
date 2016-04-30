@@ -343,12 +343,25 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             for(Tag tag : tagsSeen){
                 Float R = tag.R.get();
                 Float theta = tag.theta.get();
-                if(theta < 0){
-                    Float X = (float) (Math.cos(Math.abs(theta)) * R);
-                    canvas.drawLine(bitmap.getWidth()/2, 0, 0, X, paint);
+                if(theta > 0){
+                    if(theta < -Math.PI / 2)
+                    {
+                        Float Y = (float) ((1 / Math.tan(Math.abs(theta))) * bitmap.getWidth() / 2);
+                        canvas.drawLine(bitmap.getWidth()/2, 0, 0, Y, paint);
+                    }else{
+                        Float X = (float) (Math.tan(Math.abs(theta)) * bitmap.getHeight());
+                        canvas.drawLine(bitmap.getWidth()/2, 0, bitmap.getWidth()/2 - X, bitmap.getHeight(), paint);
+                    }
+
                 } else{
-                    Float X = (float) (Math.cos(theta) * R);
-                    canvas.drawLine(bitmap.getWidth()/2, 0, bitmap.getWidth(), X, paint);
+                    if(theta < Math.PI / 2){
+                        Float X = (float) (Math.tan(Math.abs(theta)) * bitmap.getHeight());
+                        canvas.drawLine(bitmap.getWidth()/2, 0, bitmap.getWidth()/2 + X, bitmap.getHeight(), paint);
+                    } else{
+                        Float Y = (float) ((1 / Math.tan(Math.abs(theta))) * bitmap.getWidth() / 2);
+                        canvas.drawLine(bitmap.getWidth()/2, 0, bitmap.getWidth(), Y, paint);
+                    }
+
                 }
             }
             //canvas.drawLine(0, resultBitmap.getHeight()/2, resultBitmap.getWidth(), resultBitmap.getHeight()/2, paint);
