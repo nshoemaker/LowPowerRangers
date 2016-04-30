@@ -173,14 +173,10 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        detector = new ScaleGestureDetector(this, new ScaleListener());
+    private void resetView(){
         setContentView(R.layout.activity_main);
 
         changeTextBoxMessage();
-        verifyStoragePermissions(this);
 
         // Setup FAB
         FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);
@@ -201,7 +197,14 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 startCameraIntent();
             }
         });
+    }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        detector = new ScaleGestureDetector(this, new ScaleListener());
+        verifyStoragePermissions(this);
+        resetView();
         if(savedInstanceState != null){
             this.tagIDsSeen = (HashMap<String, String>)savedInstanceState.getSerializable("Tags");
             for(String tagId: tagIDsSeen.keySet()){
@@ -233,6 +236,15 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         // fileUri
         Picasso.with(this).load(fileUri).into(imageView);
         Log.d("FileUri", fileUri.toString());
+
+        Button cancelButton = (Button) findViewById(R.id.cancel_button);
+        cancelButton.setBackgroundResource(R.drawable.cancel_button);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetView();
+            }
+        });
     }
 
     private void changeTextBoxMessage(){
