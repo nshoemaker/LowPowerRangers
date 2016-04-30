@@ -5,6 +5,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -42,6 +46,7 @@ import okhttp3.Response;
 
 import com.embedded549team20.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private HashMap<String, String> tagIDsSeen = new HashMap<String,String>();
@@ -197,6 +202,15 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 startCameraIntent();
             }
         });
+
+        for(Tag tag: tagsSeen){
+            // android.R.id.content gives you the root view
+            ViewGroup viewGroup = (ViewGroup) findViewById(android.R.id.content);
+            LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+            TagLayoutBinding binding = DataBindingUtil.inflate(layoutInflater, R.layout.tag_layout,
+                    viewGroup, true);
+            binding.setTag(tag);
+        }
     }
 
     @Override
@@ -234,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         ImageView imageView = (ImageView) findViewById(R.id.image_view);
 
         // fileUri
-        Picasso.with(this).load(fileUri).into(imageView);
+        Picasso.with(this).load(fileUri).transform(new ShowOnImageTransformation()).into(imageView);
         Log.d("FileUri", fileUri.toString());
 
         Button cancelButton = (Button) findViewById(R.id.cancel_button);
@@ -315,6 +329,31 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             changeTagRoomSizes(scaleFactor);
             changeTextBoxMessage();
             return true;
+        }
+    }
+
+    private class ShowOnImageTransformation implements Transformation {
+        @Override
+        public Bitmap transform(Bitmap bitmap) {
+            Bitmap resultBitmap = bitmap.copy(bitmap.getConfig(), true);
+            Canvas canvas = new Canvas(resultBitmap);
+            Paint paint = new Paint();
+            paint.setColor(Color.BLUE);
+            paint.setStrokeWidth(10);
+            for(Tag tag : tagsSeen){
+                Float R = tag.R.get();
+                Float theta = tag.theta.get();
+                Float X = (float) (Math.tan(theta) * bitmap.getWidth() / 2);
+                canvas.drawLine(bitmap.getWidth()/2, 0, 0, X, paint);
+            }
+            //canvas.drawLine(0, resultBitmap.getHeight()/2, resultBitmap.getWidth(), resultBitmap.getHeight()/2, paint);
+            bitmap.recycle();
+            return resultBitmap;
+        }
+
+        @Override
+        public String key() {
+            return "ShowOnImage";
         }
     }
 
