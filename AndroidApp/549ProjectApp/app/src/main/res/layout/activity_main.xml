@@ -26,20 +26,32 @@
         android:layout_width="200dp"
         android:layout_height="30dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="    Anchor Position"
+        android:text="      Anchor Position"
+        android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
         android:id="@+id/anchor_position"
         android:layout_alignParentTop="true"
         android:layout_centerInParent="true"/>
 
     <TextView
-        android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
         android:textColor="@color/white"
         android:id="@+id/dimensions_position"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:paddingLeft="25dp"
-        android:paddingBottom="10dp"/>
+        android:paddingBottom="10dp"
+        android:layout_alignTop="@id/add_item_fab"/>
+
+    <Button
+        android:layout_width="75dp"
+        android:layout_height="60dp"
+        android:id="@+id/camera_button"
+        android:layout_toLeftOf="@id/add_item_fab"
+        android:layout_toRightOf="@id/dimensions_position"
+        android:layout_alignTop="@id/add_item_fab"
+        android:layout_alignParentBottom="true"/>
+
+
 
 </com.embedded549team20.shashwatsrivastava.androidapp549.PixelGridView>

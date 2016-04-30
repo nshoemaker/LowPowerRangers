@@ -1,6 +1,14 @@
 package com.embedded549team20.shashwatsrivastava.androidapp549;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,13 +19,18 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,6 +41,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import com.embedded549team20.shashwatsrivastava.androidapp549.databinding.TagLayoutBinding;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements AddTagDialogFragment.DialogListener{
     private HashMap<String, String> tagIDsSeen = new HashMap<String,String>();
@@ -39,6 +53,76 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     private float scaleFactor = 1.f;
     private ScaleGestureDetector detector;
     private final int baseRoomHeight = 800;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    public static final int MEDIA_TYPE_VIDEO = 2;
+    private Uri fileUri;
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+
+    /** Create a file Uri for saving an image or video */
+    private Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    private File getOutputMediaFile(int type){
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+        // Create the storage directory if it does not exist
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+                Log.d("MyCameraApp", "failed to create directory");
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE){
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "IMG_"+ timeStamp + ".jpg");
+        } else if(type == MEDIA_TYPE_VIDEO) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "VID_"+ timeStamp + ".mp4");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
 
     private Callback customCallback = new Callback() {
         @Override
@@ -96,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
         setContentView(R.layout.activity_main);
 
         changeTextBoxMessage();
+        verifyStoragePermissions(this);
 
         // Setup FAB
         FloatingActionButton addItemFab = (FloatingActionButton) findViewById(R.id.add_item_fab);
@@ -105,6 +190,15 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             public void onClick(View v) {
                 DialogFragment dialogFragment = new AddTagDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "AddTag");
+            }
+        });
+
+        Button cameraButton = (Button) findViewById(R.id.camera_button);
+        cameraButton.setBackgroundResource(R.drawable.camera_icon);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCameraIntent();
             }
         });
 
@@ -121,6 +215,24 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 binding.setTag(newTag);
             }
         }
+    }
+
+    private void startCameraIntent(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+        startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        setContentView(R.layout.image_view);
+        ImageView imageView = (ImageView) findViewById(R.id.image_view);
+
+        // fileUri
+        Picasso.with(this).load(fileUri).into(imageView);
+        Log.d("FileUri", fileUri.toString());
     }
 
     private void changeTextBoxMessage(){
