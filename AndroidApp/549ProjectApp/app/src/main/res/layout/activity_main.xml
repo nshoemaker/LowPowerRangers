@@ -39,9 +39,10 @@
         android:textColor="@color/white"
         android:id="@+id/dimensions_position"
         android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/add_item_fab"
+        android:layout_alignBottom="@id/add_item_fab"
         android:paddingLeft="25dp"
-        android:paddingBottom="10dp"
-        android:layout_alignTop="@id/add_item_fab"/>
+        android:paddingBottom="10dp"/>
 
     <Button
         android:layout_width="75dp"
@@ -50,7 +51,7 @@
         android:layout_toLeftOf="@id/add_item_fab"
         android:layout_toRightOf="@id/dimensions_position"
         android:layout_alignTop="@id/add_item_fab"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignBottom="@id/add_item_fab"/>
 
 
 
