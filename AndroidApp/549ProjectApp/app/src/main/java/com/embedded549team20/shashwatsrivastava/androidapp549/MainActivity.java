@@ -363,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             Canvas canvas = new Canvas(resultBitmap);
             Paint paint = new Paint();
             paint.setColor(Color.BLUE);
-            paint.setStrokeWidth(10);
+            paint.setStrokeWidth(30);
             for(Tag tag : tagsSeen){
                 Float R = tag.R.get();
                 Float theta = tag.theta.get();
