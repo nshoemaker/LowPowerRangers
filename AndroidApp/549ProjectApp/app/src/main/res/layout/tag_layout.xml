@@ -16,8 +16,8 @@
         app:onClickListener="@{tag.clickListener}">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
             android:text="@{tag.tagName}"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/white"/>

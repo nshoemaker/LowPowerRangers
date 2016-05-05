@@ -46,7 +46,7 @@ public class Tag extends BaseObservable {
     // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
     // than tag center
     private int tagViewHeight = 45;
-    private int tagViewWidth = 100;
+    private int tagViewWidth = 75;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String reponseString;
@@ -110,10 +110,10 @@ public class Tag extends BaseObservable {
     private void setNewTagPosition() {
         targetX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta.get()) * R.get() * (this.dpWidth / this.roomWidth)) * this.dpToPx);
         targetY = (float) (((Math.cos(theta.get()) * R.get() * (this.dpHeight / this.roomHeight)) - 0.75 * tagViewHeight) * this.dpToPx);
-//        Log.d(TAG, "Theta is " + theta);
-//        Log.d(TAG, "R is " + R);
-//        Log.d(TAG, "deltaX is " + deltaX);
-//        Log.d(TAG, "deltaY is " + deltaY);
+        Log.d(TAG, "Theta is " + theta);
+        Log.d(TAG, "R is " + R);
+        Log.d(TAG, "targetX is " + targetX);
+        Log.d(TAG, "targetY is " + targetY);
         if(arrayX.size() >= 5){
             arrayX.remove(0);
         }
