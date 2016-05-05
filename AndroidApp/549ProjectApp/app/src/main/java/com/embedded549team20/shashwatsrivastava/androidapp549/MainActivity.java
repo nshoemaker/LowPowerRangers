@@ -31,12 +31,16 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -245,10 +249,23 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         setContentView(R.layout.image_view);
-        ImageView imageView = (ImageView) findViewById(R.id.image_view);
+        final ImageView imageView = (ImageView) findViewById(R.id.image_view);
 
+        class DrawOnPictureTask extends TimerTask{
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Picasso.with(MainActivity.this).load(fileUri).transform(new ShowOnImageTransformation()).into(imageView);
+                    }
+                });
+            }
+        }
         // fileUri
         Picasso.with(this).load(fileUri).transform(new ShowOnImageTransformation()).into(imageView);
+        Timer timer = new Timer();
+        timer.schedule(new DrawOnPictureTask(), 0, 10000);
         Log.d("FileUri", fileUri.toString());
 
         Button cancelButton = (Button) findViewById(R.id.cancel_button);
@@ -259,6 +276,13 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 resetView();
             }
         });
+//        Button retakeButton = (Button) findViewById(R.id.cancel_button);
+//        retakeButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                startCameraIntent();
+//            }
+//        });
     }
 
     private void changeTextBoxMessage(){
@@ -343,12 +367,12 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
             for(Tag tag : tagsSeen){
                 Float R = tag.R.get();
                 Float theta = tag.theta.get();
-                if(theta > 0){
-                    if(theta > -Math.PI / 4)
+                if(theta < 0){
+                    if(theta < -Math.PI / 4)
                     {
                         Float Y = (float) ((1 / Math.tan(Math.abs(theta))) * bitmap.getWidth() / 2);
-                        canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), 0, Y, paint);
-                    }else{
+                        canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), 0, bitmap.getHeight() - Y, paint);
+                    } else {
                         Float X = (float) (Math.tan(Math.abs(theta)) * bitmap.getHeight());
                         canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), bitmap.getWidth()/2 - X, 0, paint);
                     }
@@ -357,9 +381,9 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                     if(theta < Math.PI / 4){
                         Float X = (float) (Math.tan(Math.abs(theta)) * bitmap.getHeight());
                         canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), bitmap.getWidth()/2 + X, 0, paint);
-                    } else{
+                    } else {
                         Float Y = (float) ((1 / Math.tan(Math.abs(theta))) * bitmap.getWidth() / 2);
-                        canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), bitmap.getWidth(), Y, paint);
+                        canvas.drawLine(bitmap.getWidth()/2, bitmap.getHeight(), bitmap.getWidth(), bitmap.getHeight() - Y, paint);
                     }
 
                 }
