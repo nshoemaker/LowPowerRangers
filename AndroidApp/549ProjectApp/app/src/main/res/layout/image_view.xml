@@ -9,8 +9,8 @@
         android:id="@+id/image_view"/>
 
     <Button
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:id="@+id/cancel_button"/>

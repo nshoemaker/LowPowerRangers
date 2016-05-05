@@ -257,13 +257,15 @@ public class MainActivity extends AppCompatActivity implements AddTagDialogFragm
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Picasso.with(MainActivity.this).load(fileUri).transform(new ShowOnImageTransformation()).into(imageView);
+                        Picasso.with(MainActivity.this).load(fileUri).placeholder(R.drawable.image_not_found).error(R.drawable.image_not_found)
+                                .transform(new ShowOnImageTransformation()).into(imageView);
                     }
                 });
             }
         }
         // fileUri
-        Picasso.with(this).load(fileUri).transform(new ShowOnImageTransformation()).into(imageView);
+        Picasso.with(this).load(fileUri).placeholder(R.drawable.image_not_found).error(R.drawable.image_not_found)
+                .transform(new ShowOnImageTransformation()).into(imageView);
         Timer timer = new Timer();
         timer.schedule(new DrawOnPictureTask(), 0, 10000);
         Log.d("FileUri", fileUri.toString());
