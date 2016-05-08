@@ -1,21 +1,21 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableFloat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.PopupMenu;
-import android.widget.PopupWindow;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,25 +33,32 @@ import okhttp3.Response;
 public class Tag extends BaseObservable {
     private int tagID;
     private static final String TAG = "TagInTag";
+    private static final int UPDATE_MILLIS = 300;
     private String tagName;
     public ObservableFloat translationX;
     public ObservableFloat translationY;
     private float dpToPx;
     private float dpHeight;
     private float dpWidth;
+    // Last updated coordinates
+    private float targetX;
+    private float targetY;
     // Need size of tag view to get correct position of tag cause otherwise it shows tag left rather
     // than tag center
-    private int tagViewHeight = 45;
-    private int tagViewWidth = 100;
+    private int tagViewHeight = 170;
+    private int tagViewWidth = 200;
     private OkHttpClient client = new OkHttpClient();
     private String url = "https://test-server-549.herokuapp.com/testServer/get/";
     private String reponseString;
     public ObservableFloat theta;
     public ObservableFloat R;
     // Assuming size of room is 8m
-    private final float roomHeight = 800;
-    private final float roomWidth;
+    private float baseRoomHeight = 800;
+    private float roomHeight = 800;
+    private float roomWidth;
     private Context context;
+    private ArrayList<Float> arrayX = new ArrayList<>();
+    private ArrayList<Float> arrayY = new ArrayList<>();
 
     private Callback customCallback = new Callback() {
             @Override
@@ -78,22 +85,56 @@ public class Tag extends BaseObservable {
             }
         };
 
+    @BindingAdapter({"app:targetX", "app:targetY"})
+    public static void animateTranslation(LinearLayout layout, float x, float y) {
+        ObjectAnimator animX = ObjectAnimator.ofFloat(layout, "x", layout.getX(), x);
+        ObjectAnimator animY = ObjectAnimator.ofFloat(layout, "y", layout.getY(), y);
+        animX.setDuration(UPDATE_MILLIS * 3);
+        animY.setDuration(UPDATE_MILLIS * 3);
+        animX.start();
+        animY.start();
+    }
+
+    private Float getAverageOfArray(ArrayList<Float> arr){
+        Float total = 0.0f;
+        for(Float num : arr){
+            total += num;
+        }
+        return total / arr.size();
+    }
+
     /**
      * This method uses the values of R and theta to
      * calculate the new position for the tag dot
      */
     private void setNewTagPosition() {
-        float deltaX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta.get()) * R.get() * (this.dpWidth / this.roomWidth)) * this.dpToPx);
-        float deltaY = (float) (((Math.cos(theta.get()) * R.get() * (this.dpHeight / this.roomHeight)) - 0.75 * tagViewHeight) * this.dpToPx);
-//        Log.d(TAG, "Theta is " + theta);
-//        Log.d(TAG, "R is " + R);
-//        Log.d(TAG, "deltaX is " + deltaX);
-//        Log.d(TAG, "deltaY is " + deltaY);
-        Log.d(TAG, Double.toString(Math.cos(theta.get()) * R.get() ));
+        targetX = (float) ((this.dpWidth/2 - tagViewWidth/2 + Math.sin(theta.get()) * R.get() * (this.dpWidth / this.roomWidth)) * this.dpToPx);
+        targetY = (float) (((Math.cos(theta.get()) * R.get() * (this.dpHeight / this.roomHeight)) - 0.20 * tagViewHeight) * this.dpToPx);
+        Log.d(TAG, "Theta is " + theta);
+        Log.d(TAG, "R is " + R);
+        Log.d(TAG, "targetX is " + targetX);
+        Log.d(TAG, "targetY is " + targetY);
+        if(arrayX.size() >= 5){
+            arrayX.remove(0);
+        }
+        if(arrayY.size() >= 5){
+            arrayY.remove(0);
+        }
+        arrayX.add(targetX);
+        arrayY.add(targetY);
+        Log.d(TAG, Double.toString(Math.cos(theta.get()) * R.get()));
         Log.d(TAG, Double.toString((this.dpHeight / this.roomHeight)));
         Log.d(TAG, Double.toString(0.75 * tagViewHeight));
-        translationX.set(deltaX);
-        translationY.set(deltaY);
+        if(arrayX.size() >= 5){
+            translationX.set(getAverageOfArray(arrayX));
+        } else {
+            translationX.set(targetX);
+        }
+        if(arrayY.size() >= 5){
+            translationY.set(getAverageOfArray(arrayY));
+        } else{
+            translationY.set(targetY);
+        }
     }
 
     public Tag(String tagID, String tagName) {
@@ -102,8 +143,10 @@ public class Tag extends BaseObservable {
         this.dpToPx = DisplayUtilities.dpToPx(1);
         this.dpHeight = DisplayUtilities.getDpHeight();
         this.dpWidth = DisplayUtilities.getDpWidth();
-        this.translationX = new ObservableFloat(dpWidth/2 * this.dpToPx - tagViewWidth);
-        this.translationY = new ObservableFloat(dpHeight/2 * this.dpToPx - tagViewHeight);
+        this.targetX = dpWidth/2 * this.dpToPx - tagViewWidth;
+        this.targetY = dpHeight/2 * this.dpToPx - tagViewHeight;
+        this.translationX = new ObservableFloat(targetX);
+        this.translationY = new ObservableFloat(targetY);
         this.theta = new ObservableFloat(0);
         this.R = new ObservableFloat(0);
         this.url = this.url + tagID;
@@ -115,7 +158,7 @@ public class Tag extends BaseObservable {
         Log.d(TAG, "Width in dp is " + this.dpWidth);
         Log.d(TAG, "dpToPX is " + this.dpToPx);
         Timer timer = new Timer();
-        timer.schedule(new UpdateTagValues(this), 0, 300);
+        timer.schedule(new UpdateTagValues(this), 0, UPDATE_MILLIS);
     }
 
     @Bindable
@@ -139,19 +182,24 @@ public class Tag extends BaseObservable {
          * for the given tag
          */
         @Override
-        public void onClick(View v) {
-            PopupWindow popupWindow = new PopupWindow(v.getContext());
-            View view = LayoutInflater.from(v.getContext()).inflate(
-                    com.example.shashwatsrivastava.androidapp549.R.layout.tag_info, null, false);
-            TextView r = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_r);
-            r.setText("The distance from the center is " + Float.toString(Tag.this.R.get()));
-            TextView theta = (TextView) view.findViewById(com.example.shashwatsrivastava.androidapp549.R.id.tag_info_theta);
-            theta.setText("Theta is " + Float.toString(Tag.this.theta.get()));
-            popupWindow.setFocusable(true);
-            popupWindow.setContentView(view);
-            popupWindow.showAsDropDown(v);
+        public void onClick(View view) {
+            final LinearLayout linearLayout = (LinearLayout) view.findViewById(com.embedded549team20.shashwatsrivastava.androidapp549.R.id.layout_tag_info);
+            linearLayout.setBackgroundResource(com.embedded549team20.shashwatsrivastava.androidapp549.R.drawable.rounded_rectangle);
+            if(linearLayout.getVisibility() == View.VISIBLE){
+                linearLayout.setVisibility(View.INVISIBLE);
+            }else{
+                linearLayout.setVisibility(View.VISIBLE);
+            }
         }
     };
+
+    public void setRoomHeight(float factor){
+        roomHeight = baseRoomHeight / factor;
+        Log.d(TAG, "The room height is ");
+        Log.d(TAG, Float.toString(roomHeight));
+        roomWidth = this.roomHeight * (dpWidth/ dpHeight);
+        setNewTagPosition();
+    }
 
     private class UpdateTagValues extends TimerTask {
         private Tag tag;

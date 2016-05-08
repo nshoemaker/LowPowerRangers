@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">AndroidApp549</string>
+    <string name="app_name">18-549 Team 20 2016</string>
     <string name="action_settings">Settings</string>
     <string name="dialog_message">Enter Tag ID and Name</string>
     <string name="dialog_save">Add Tag!</string>
     <string name="tagID_already_seen">Already added this tag ID</string>
     <string name="error_message_initial">An error occured while loading the tag data</string>
     <string name="tag_doesnt_exist">The tag ID isnt valid</string>
+    <string name="anchor_message">Anchor Position</string>
 </resources>

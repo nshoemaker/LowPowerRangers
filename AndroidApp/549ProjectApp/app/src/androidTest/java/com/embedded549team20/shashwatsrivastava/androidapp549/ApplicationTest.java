@@ -1,4 +1,4 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

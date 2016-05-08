@@ -1,12 +1,10 @@
-package com.example.shashwatsrivastava.androidapp549;
+package com.embedded549team20.shashwatsrivastava.androidapp549;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.widget.RelativeLayout;
 
 /**
@@ -18,15 +16,11 @@ public class PixelGridView extends RelativeLayout {
     private int cellWidth = cellHeight;
     private int numColumns = (int) DisplayUtilities.getDpWidth() / cellWidth;
     private Paint redPaint = new Paint();
-    // Will be used to take care of scaling
-    private ScaleGestureDetector mScaleDetector;
-    private float mScaleFactor = 1.f;
 
     public PixelGridView(Context context) {
         this(context, null);
         redPaint.setColor(Color.RED);
         setWillNotDraw(false);
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
     public PixelGridView(Context context, AttributeSet attrs) {
@@ -34,7 +28,6 @@ public class PixelGridView extends RelativeLayout {
         redPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         redPaint.setColor(Color.RED);
         setWillNotDraw(false);
-        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
     }
 
     public void setNumColumns(int numColumns) {
@@ -80,9 +73,6 @@ public class PixelGridView extends RelativeLayout {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-//        canvas.save();
-//        canvas.scale(mScaleFactor, mScaleFactor);
-
         canvas.drawColor(Color.BLACK);
 
         if (numColumns == 0 || numRows == 0) {
@@ -99,26 +89,8 @@ public class PixelGridView extends RelativeLayout {
         for (int i = 1; i < numRows; i++) {
             canvas.drawLine(0, i * cellHeight, width, i * cellHeight, redPaint);
         }
-        //canvas.restore();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        // Let the ScaleGestureDetector inspect all events.
-        mScaleDetector.onTouchEvent(ev);
-        return true;
-    }
 
-    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            mScaleFactor *= detector.getScaleFactor();
 
-            // Don't let the object get too small or too large.
-            mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-
-            invalidate();
-            return true;
-        }
-    }
 }
