@@ -26,8 +26,10 @@
 				<nav id="nav">
 					<ul>
 						<li><a href="#one" class="active">About</a></li>
+						<li><a href="#vid">Video</a></li>
+						<li><a href="#pics">Pictures</a></li>
 						<li><a href="#docs">Documentation</a><li>
-						<li><a href="#updates" class="active">Updates</a></li>
+						<li><a href="updates.html">Updates</a></li>
 					</ul>
 				</nav>
 				<footer>
@@ -60,7 +62,40 @@
 										<span class="image left"><img src="images/logo.jpg" alt="" /></span>
 										We are three Electrical and Computer Engineering students at Carnegie Mellon University working on our senior capstone. This website is meant to track the progress of our project over the Spring 2016 semester.  
 									</p>
+									<p><a href="https://github.com/nshoemaker/LowPowerRangers" target="_blank">Source Code on GitHub</a></p>
 								</div>
+								</div>
+							</section>
+
+							<!-- Implementation -->
+							<section id="vid">
+								<div class="container">
+									<h3>Video</h3>
+								</div>
+							</section>
+
+							<!-- Implementation -->
+							<section id="pics">
+								<div class="container">
+									<h3>Pictures</h3>
+
+										<div class="box alt">
+											<div class="row 50% uniform">
+												<div class="4u"><span class="image fit"><img src="images/block1.jpeg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block2.jpeg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block6.jpg" alt="" /></span></div>
+											</div>
+											<div class="row 50% uniform">
+												<div class="4u"><span class="image fit"><img src="images/block4.jpeg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block5.JPG" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block3.jpeg" alt="" /></span></div>
+											</div>
+											<div class="row 50% uniform">
+												<div class="4u"><span class="image fit"><img src="images/block7.jpg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block8.jpg" alt="" /></span></div>
+												<div class="4u"><span class="image fit"><img src="images/block9.jpg" alt="" /></span></div>
+											</div>
+										</div>
 								</div>
 							</section>
 
@@ -370,233 +405,6 @@
 									</div>
 								</div>
 							</section>
-
-
-<!-- ------------------- UPDATES -------------------------------------------------------- -->
-							<!-- Two -->
-							<section id="updates">
-								<div class="container">
-									<h3>Updates</h3>
-									<p>Check back here for updates on our project progression!</p>
-									<div class="features">
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-android">
-														<h3>4/4/2016</h3>
-													</li>
-												</ul>
-												<h4>Two-Way Ranging, Android App, and a New Board Layout</h4>
-
-												<a href="images/04.03.16EagleLayout.JPG" class="image"><img src="images/04.03.16EagleLayout.JPG" alt="" /></a>
-												<div class="inner">
-													<p>This week we revised our board layout, implemented a two-way ranging protocol using the DWM1000s, and created an example demo Android application.</p>
-													<p>We also updated the website for the second checkpoint and added the <a href="#use_cases" target="_blabk">Use Cases</a>, <a href="#interaction_diagrams" target="_blank">Interaction Diagrams</a>, and <a href="#arch" target="_blank">Architecture</a> sections to the <a href="#docs" target="_blank">Documentation</a> part of our website (above).</p>
-												</div>
-												<p></p>
-												<h5>Second Iteration of Board Layout</h5>
-												<p>We found a voltage regulator with a bigger footprint than our original choice. We should have no problem soldering this new one.</p>
-												<p>Instead of using a through-hole Atmega328, we decided we would use the surface mount TQFP version. This allowed our board to be smaller and more compact. However, our original plan was to program the chips off-board because of the 5V nature of our AVR programmer and the 3V nature of the DWM1000s (both would need to be connected via SPI and it would be hard to separate them). However, adding a surface mount chip meant we would need to program on-board, and therefore need to add the 6-pin AVR headers, and find a way to not fry the DWMs. We found out that there was a setting in the AVR programmer that allowed it to match the power level of the circuit it was programming when it is not the power source, so we were all set. </p>
-												<p>After all of that research we decided that because we technically don't need to be able to program the chip once it is on our PCB, we didn't want to expose the programming headers and have them take up more room on the board. Luckily, we found this <a href="https://www.adafruit.com/products/1240" target="_blank">TQFP Breakout Socket from Adafruit</a> which should allow us to program our surface mount chips away from our PCBs.</p>
-												<h5>Two Way Ranging</h5>
-												<p>After a lot of hard work we finally implemented a two-way ranging protocol using the DWM1000s. Here we have the specific roles of Tag and Anchor defined and they are able to determine the range between the two through the passage of three messages. This was an exercise in starting the protocol off, getting us closer to the final ranging protocol we decided on, descriped in the <a href="#interaction_diagrams" target="_blank">Interaction Diagrams</a> section above. 
-												</p>
-												<p>Here is a diagram describing the initial protocol we implemented:</p>
-												<img src="images/twr.JPG" class="smallwidth">
-												<p></p>
-												<h5>Android App</h5>
-												<p>This week we created an Android App implementing the <a href="https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/AppIdea.md" target="_blank">app idea</a> we described last week. We chose to create an Android app mostly because our team member in charge of this portion is in an Android development class and is interested in getting as much experience as possible.</p>
-
-												<p>Deliverables for the week:</p>
-												<ul>
-													<li>Eagle schematic and layout <a href="https://github.com/nshoemaker/LowPowerRangehttps://github.com/nshoemaker/LowPowerRangers/commit/ab6a6c55503b27bf2e2fcd036c1b6661396dc728" target="_blank">(files)</a></li>
-													<li>Two Way Ranging <a href="https://github.com/nshoemaker/LowPowerRangers/commit/a6d29bc90b42aeca31870191fad3fa9a78b430c7" target="_blank">(code)</a></li>
-													<li>Android App <a href="https://github.com/nshoemaker/LowPowerRangers/commit/c69aa0ed720f3cab4aff74a1989d6e6945e477a9" target="_blank">(link)</a></li>
-												</ul>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-spinner">
-														<h3>3/28/2016</h3>
-													</li>
-												</ul>
-												<h4>App Ideas, DWM 1000 Timestamps, and Eagle Board/Layout</h4>
-
-												<a href="images/03.31.16EagleLayout.JPG" class="image"><img src="images/03.31.16EagleLayout.JPG" alt="" /></a>
-												<div class="inner">
-													<p>This week we spent time finishing up our DWM1000 driver library, working primarily on the retrieving timestamps from the DWM1000 as this will be a crucial part of the ranging protocol. Additionally, we spent some time coming up with possible App ideas to run on top of our API. On the hardware side, we created the first iteration of our Eagle schematic and board layout. </p>
-
-													<p>The app idea is to make an Android mobile application which can use data it receives from the server to show the most recent position of the tag being tagged. To do this the Android app will connect to the website and pull information and update the locations of the tags on screen.</p>
-													<p>The dot representing the tag will move around as required. The position of the tag is fixed at the top of the screen and the user will have to orient himself that way as there is no way of knowing which direction the user is relative to the anchors.</p>
-												</div>
-												<p></p>
-												<p>Deliverables for the week:</p>
-
-												<ul>
-													<li>Eagle schematic and layout <a href="https://github.com/nshoemaker/LowPowerRangers/commit/b639c01ef708c4d1f5ffed2c659bcfd06d8fe87b" target="_blank">(files)</a></li>
-													<li>DWM1000 Timestamps <a href="https://github.com/nshoemaker/LowPowerRangers/commit/ee455071fdcaca504c3a81d25539bc215a62faa0" target="_blank">(code)</a></li>
-													<li>Writeup on app idea <a href="https://github.com/nshoemaker/LowPowerRangers/blob/master/Docs/AppIdea.md" target="_blank">(link)</a></li>
-												</ul>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-bullhorn">
-														<h3>3/22/2016</h3>
-													</li>
-												</ul>
-												<h4>Message Rx/Tx and Connecting the Arduino to the RasPi</h4>										
-												<p>This week we worked on sending and receiving messages using the DWM1000s <a href="https://github.com/nshoemaker/LowPowerRangers/commit/12cf74a850eb087c78a123c0281444904d19bff8" target="_blank">(code)</a>. This proved to be a very arduous process. Additionally, rather than using the default config, we configured our DWM1000s using values we had picked out ourselves. We chose to do this in the hopes that we could get as much of the configuration done as possible, all at once. </p>
-												<p></p>
-												<p>Here are some of the configuration choices we made: </p>
-												<ul>
-													<li>Data rate: 6.8 Mbps</li>
-													<li>Preamble length: 128</li>
-													<li>PRF: 64 MHz</li>
-													<li>Channel: 2</li>
-												</ul>
-												<p></p>
-												<p>We also worked on getting the raspberry pi connected to the Arduino over serial using an FTDI cable <a href="https://github.com/nshoemaker/LowPowerRangers/commit/ab058e38b50cc9c417c85f8f3dbaf1afba09fc5b" target="_blank">(code)</a>.</p>
-											</div>
-										</article>										
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-plane">
-														<h3>3/14/2016</h3>
-													</li>
-												</ul>
-												<h4>Making Contact with the DWM1000, Schematics, Deployment, RasPis and More! </h4>
-
-												<a href="images/2016.03.15.jpg" class="image"><img src="images/2016.03.15.jpg" alt="" /></a>
-												<div class="inner">
-													<p>This week we focused on:</p>
-												<ul>
-													<li>Soldering the new DWM1000s and adding them to our breadboarded prototypes.</li>
-													<li>Reading and Writing to DWM1000 Registers over SPI. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/e219cd2be49e8636380b2e7d7e009424ae558c66" target="_blank">(code)</a></li>
-													<li>Making DWM1000 Device Address Configurable via Makefile. <a href="https://github.com/nshoemaker/LowPowerRangers/blob/e219cd2be49e8636380b2e7d7e009424ae558c66/microcontrollers/src/tag/Makefile#L88" target="_blank">(code)</a></li>
-													<li>Deploying our django server. <a href="https://test-server-549.herokuapp.com/testServer/set/2/1/1/1" target="_blank">(example API call)</a> </li>
-													<li>Creating an Eagle schematic to Match our prototypes. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/cb8676a9869359cc88f6ee02b6d7bb34378c6850" target="_blank">(sch file)</a></li>
-													<li>Setting up Raspberry Pi.</li>
-												</ul>
-												</div>
-												<p></p>
-													<p>Thanks to Spring Break, this is more like two weeks worth of work(ish).</p>
-												<h5>The DWM1000s are here!</h5>
-													<p>Much to our relief, the DWM1000s finally arrived. This allowed us to start a lot of the work we had been putting off while waiting for them. First, we soldered them and connected them to our breadboarded prototypes (this was a painful process, we are actually looking forward to being able to surface mount solder them to our PCB), then we decided to make initial contact with them by simply reading the device ID from the chip (some read operations are more complex than others due to offsets, etc. and this one seemed like a simple one to start out with). We then moved on to accommodating reads/writes with various address offsets.</p>
-												<h5>RasPi and Server Deployment</h5>
-													<p>This week we also decided to focus on deploying our web server and attempting to query it from the Raspberry Pi. This activity was good because it forced us to setup the Raspberry Pi and configure the Wifi adapter we bought. Additionally, it forced us to go through the web server deployment process which, even with experience, tends to be a bit tricky. We chose to deploy on Heroku because it is easy and we do not need to store data persistantly in our DB. Below is an example output from our API.</p>
-													<pre><code>
-$ curl https://test-server-549.herokuapp.com/testServer/set/2/1/1/1
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100    60    0    60    0     0    192      0 --:--:-- --:--:-- --:--:--   213
-
-<html><body>It has been set to R=0.866025 and theta=0.000000
-
-													</code></pre>
-												<h5>Eagle Schematic</h5>
-													<p>
-														After having a working prototype, we decided it was time to create an Eagle schematic of our prototype so we can be ready to print the PCBs as soon as possible. We are still waiting to confirm a few of the connections (mostly waiting for interrupt related connections coming from the DWM1000s). Creating the schematic brought up some problems related to the initial parts we ordered (and their possible lack of surface mount equivalents). For this reason, we had to do some more research into finding the correct surface mount substitutes for the through hole parts being used in the current prototypes. Additionally, we were able to find a <a href="https://github.com/nshoemaker/LowPowerRangers/commit/9ff49f17429d7e04b1f94a3f40483ad6cec65fab" target="_blank">DWM1000 library file</a> for Eagle, which meant we didn't need to create/define this part ourselves. 
-													</p>
-													<a href="images/03.15.16Schematic.JPG"><img src="images/03.15.16Schematic.JPG" alt="" /></a>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-hourglass-2">
-														<h3>2/29/2016</h3>
-													</li>
-												</ul>
-												<h4>Waiting for parts... plus adventures in 3V microcontrollers/django/Makefiles.</h4>
-
-												<a href="images/2016.02.29.jpeg" class="image"><img src="images/2016.02.29.jpeg" alt="" /></a>
-												<div class="inner">
-													<p>Much of this week was spent blocked as we waited for our parts to come in (they aren't even all in yet due to a plethora of errors from wrong part being delivered to credit cards being declined). This has set us back a bit -- especially because the bulk of the parts came in on Thursday but we are still waiting for our most crucuial part: the DWM1000 tranceivers.</p>
-												</div>
-												<p></p>
-												<p> In the face of this setback, we have been reorganizing and focusing on the things we can do without our tranceivers:</p>
-
-												<ul>
-													<li>Project structure and build setup for microcontrollers. Including Makefiles that let us link to the Arduino library. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/4179eefa6e56ac756bdf30370de4973f89213884" target="_blank">(code)</a></li>
-													<li>Our django server. <a href="https://github.com/nshoemaker/LowPowerRangers/commit/7f96ca16664447863ede22a42b2754b77474dc33" target="_blank">(code)</a></li>
-													<li>Breadboarding and programming our new 3V Atmega328s.</li>
-												</ul>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-shopping-cart">
-														<h3>2/17/2016</h3>
-													</li>
-												</ul>
-												<h4>First parts ordered!</h4>
-												<p>We put in our first parts order in order to get started on the building phase!</p>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-file-text-o">
-														<h3>2/12/2016</h3>
-													</li>
-												</ul>
-												<h4>Project Proposal Completed</h4>
-												<p>We completed our project proposal document containing a more detailed version of the documentation covered on this website.</p>
-												<p> Our proposal doc can be found <a href="https://docs.google.com/document/d/1kWWzRFL-WcZUMatDj1Vec_FTxZAAMO9p7tfSYRtxR-U/edit?usp=sharing" target="_blank">here</a>.
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-file-powerpoint-o">
-														<h3>2/10/2016</h3>
-													</li>
-												</ul>
-												<h4>Elevator Pitch Presentation</h4>
-												<p>We completed a short presentation in class describing the basics of our project.</p>
-												<iframe src="https://docs.google.com/presentation/d/1y2M_ChgG9lxWocf3pWJjnrJRi28dkcTjDjh5SYWuzcw/embed?start=true&loop=true&delayms=10000" frameborder="0" width="480" height="299" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
-											</div>
-										</article>
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-users">
-														<h3>2/3/2016</h3>
-													</li>
-												</ul>
-												<h4>Team Formed!</h4>
-												<p>We decided to be a team of three because we don't like other people. #NoNewFriends #ExceptAaron</p>
-											</div>
-										</article>
-										<!--<article>
-											<a href="http://www.decawave.com/" class="image"
-										<article>
-											<div>						
-												<ul class="feature-icons">
-													<li class="fa-shopping-cart">
-														<h3>2/17/2016</h3>
-													</li>
-												</ul>
-												<h4>First parts ordered!</h4>
-												<p>We put in our first parts order in order to get started on the building!</p>
-											</div>
-										</article>><img src="images/decawave.jpg" alt="" /></a>
-											<div class="inner">
-												<h4>Ultra Wide Band (UWB)</h4>
-												<p>UWB radios use time of flight (TOF) analysis to gain distance readings with <b>sub-meter accuracy</b>. Because UWB radios are not yet ubiquitous (not in phones like BLE or WiFi), UWB tracking is often used in custom installations which are expensive. Additionally, the biggest player in the production of UWB transceivers, <a href="http://www.decawave.com/">Decawave</a>, is a closed source shop and charges large amounts to gain access to their <a href="http://www.decawave.com/products/trek1000" >development kits</a>.</p>
-											</div>
-										</article>-->
-								</div>
-								</div>
-							</section>
-
-				
 
 					</div>
 
